@@ -44,73 +44,100 @@ export default function EnergyTracker() {
           <Button className="bg-[#091053] hover:bg-[#1424B9] text-white px-6 py-2 rounded-lg font-medium">Share</Button>
         </div>
 
-        {/* Filters */}
-        <Card className="bg-white shadow-sm">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-lg font-semibold text-gray-900">Filters</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div>
-                <Input
-                  placeholder="Search Machines..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="bg-gray-50 border-gray-200"
-                />
-              </div>
-              
-              <div>
-                <div className="flex bg-gray-100 rounded-lg p-1">
-                  <Button
-                    variant={chartType === "bar" ? "default" : "ghost"}
-                    onClick={() => setChartType("bar")}
-                    className={`flex-1 text-sm font-medium ${
-                      chartType === "bar" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"
-                    }`}
-                  >
-                    Bar Chart
-                  </Button>
-                  <Button
-                    variant={chartType === "line" ? "default" : "ghost"}
-                    onClick={() => setChartType("line")}
-                    className={`flex-1 text-sm font-medium ${
-                      chartType === "line" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"
-                    }`}
-                  >
-                    Line Chart
-                  </Button>
-                </div>
-              </div>
-              <div>
-                <Select value={severityFilter} onValueChange={setSeverityFilter}>
-                  <SelectTrigger className="bg-gray-50 border-gray-200">
-                    <SelectValue placeholder="All Severities" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Severities</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="low">Low</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Select value={machineFilter} onValueChange={setMachineFilter}>
-                  <SelectTrigger className="bg-gray-50 border-gray-200">
-                    <SelectValue placeholder="All Machine" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Machine</SelectItem>
-                    <SelectItem value="hvac">HVAC System</SelectItem>
-                    <SelectItem value="assembly">Assembly Line</SelectItem>
-                    <SelectItem value="compressor">Compressor</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+<Card className="bg-white shadow-sm p-6">
+  <CardHeader className="pb-6">
+    <CardTitle className="text-lg font-semibold text-gray-900">Filters</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
+      
+      {/* Search Input */}
+      <div className="flex flex-col justify-center">
+        {/* Empty title space for alignment */}
+        <div className="mb-2 h-5" />
+        <Input
+          placeholder="Search Machines..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full bg-[rgba(217,217,217,0.29)] shadow-md rounded-md h-14 px-4 border border-transparent focus:border-gray-300 focus:ring-0"
+          style={{ boxShadow: "0px 4px 4px rgba(0,0,0,0.25)" }}
+        />
+      </div>
+
+      {/* Chart Type Buttons with Title */}
+      <div className="flex flex-col">
+        <h3 className="mb-2 text-sm font-semibold text-gray-700">Chart Type</h3>
+        <div className="flex bg-white shadow-md rounded-lg p-1 h-14" style={{ boxShadow: "0px 4px 4px rgba(0,0,0,0.25)" }}>
+          <Button
+            variant={chartType === "bar" ? "default" : "ghost"}
+            onClick={() => setChartType("bar")}
+            className={`flex-1 text-sm font-medium rounded-md ${
+              chartType === "bar"
+                ? "bg-white text-gray-900 shadow-sm"
+                : "text-gray-600 hover:text-gray-900"
+            }`}
+            style={{ minWidth: 100, height: 46, maxHeight: 46 }}
+          >
+            Bar Chart
+          </Button>
+          <Button
+            variant={chartType === "line" ? "default" : "ghost"}
+            onClick={() => setChartType("line")}
+            className={`flex-1 text-sm font-medium rounded-md ${
+              chartType === "line"
+                ? "bg-white text-gray-900 shadow-sm"
+                : "text-gray-600 hover:text-gray-900"
+            }`}
+            style={{ minWidth: 100, height: 46, maxHeight: 46 }}
+          >
+            Line Chart
+          </Button>
+        </div>
+      </div>
+
+      {/* Severity Filter with Title */}
+      <div className="flex flex-col">
+        <h3 className="mb-2 text-sm font-semibold text-gray-700">Severity</h3>
+        <Select value={severityFilter} onValueChange={setSeverityFilter}>
+          <SelectTrigger
+            className="bg-white border border-gray-300 rounded-md h-14 shadow-md w-full max-w-[188px]"
+            style={{ boxShadow: "0px 4px 4px rgba(0,0,0,0.25)" }}
+          >
+            <SelectValue placeholder="All Severities" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Severities</SelectItem>
+            <SelectItem value="high">High</SelectItem>
+            <SelectItem value="medium">Medium</SelectItem>
+            <SelectItem value="low">Low</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Machine Filter with Title */}
+      <div className="flex flex-col">
+        <h3 className="mb-2 text-sm font-semibold text-gray-700">Machine</h3>
+        <Select value={machineFilter} onValueChange={setMachineFilter}>
+          <SelectTrigger
+            className="bg-white border border-gray-300 rounded-md h-14 shadow-md w-full"
+            style={{ boxShadow: "0px 4px 4px rgba(0,0,0,0.25)" }}
+          >
+            <SelectValue placeholder="All Machines" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Machines</SelectItem>
+            <SelectItem value="hvac">HVAC System</SelectItem>
+            <SelectItem value="assembly">Assembly Line</SelectItem>
+            <SelectItem value="compressor">Compressor</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      
+    </div>
+  </CardContent>
+</Card>
+
+
 
         {/* Chart Section */}
         {chartType === "bar" ? (
