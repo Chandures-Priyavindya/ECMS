@@ -1,68 +1,388 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 222.2 84% 4.9%;
+  --radius: 0.5rem;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+* {
+  border-color: hsl(var(--border));
 }
 
 body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+  padding: 0;
+}
+
+#root {
   min-height: 100vh;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+@layer base {
+  /* CSS Reset and Base Styles */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: hsl(var(--border));
   }
-  a:hover {
-    color: #747bff;
+
+  html {
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    -moz-tab-size: 4;
+    tab-size: 4;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
+      "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    font-feature-settings: normal;
+    font-variation-settings: normal;
+    scroll-behavior: smooth;
   }
+
+  /* Remove default margins and paddings */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  ul,
+  ol,
+  li,
+  blockquote,
+  figure,
+  figcaption,
+  dl,
+  dd {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Remove default list styling */
+  ul,
+  ol {
+    list-style: none;
+  }
+
+  /* Better link styling */
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Image optimization */
+  img,
+  svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Better button styling */
   button {
-    background-color: #f9f9f9;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: inherit;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  /* Better input styling */
+  input,
+  textarea,
+  select {
+    font-family: inherit;
+    font-size: inherit;
+  }
+
+  /* Better table styling */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  /* Focus styles for accessibility */
+  *:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  /* Remove focus outline for mouse users */
+  *:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Custom selection color */
+  ::selection {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+}
+
+@layer components {
+  /* Custom Energy Monitor Gradient */
+  .energy-gradient {
+    background: linear-gradient(135deg, #091053 0%, #0019ff 100%);
+  }
+
+  /* Sign In Card Styles */
+  .signin-card {
+    width: 955px;
+    height: 657px;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    display: flex;
+    overflow: hidden;
+  }
+
+  .signin-left {
+    flex: 1;
+    padding: 80px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .signin-right {
+    flex: 1;
+    padding: 80px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .welcome-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  .welcome-subtitle {
+    font-size: 14px;
+    color: #666666;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .signin-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 40px;
+    text-align: right;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  .form-input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #d1d5db;
+    background: transparent;
+    padding: 12px 0;
+    font-size: 14px;
+    color: #374151;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+
+  .form-input:focus {
+    border-bottom-color: #0019ff;
+  }
+
+  .form-input::placeholder {
+    color: #9ca3af;
+  }
+
+  .forgot-password {
+    font-size: 12px;
+    color: #9ca3af;
+    text-align: right;
+    margin-top: 8px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+
+  .forgot-password:hover {
+    color: #0019ff;
+  }
+
+  .checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 24px 0;
+  }
+
+  .checkbox {
+    width: 16px;
+    height: 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  .checkbox-label {
+    font-size: 14px;
+    color: #6b7280;
+    cursor: pointer;
+  }
+
+  .signin-button {
+    width: 100%;
+    background: #091053;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-bottom: 24px;
+  }
+
+  .signin-button:hover {
+    background: #0019ff;
+  }
+
+  .create-account-text {
+    font-size: 14px;
+    color: #6b7280;
+    text-align: center;
+  }
+
+  .create-account-link {
+    color: #0019ff;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .create-account-link:hover {
+    color: #091053;
+    text-decoration: underline;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 1024px) {
+    .signin-card {
+      width: 90vw;
+      height: auto;
+      max-width: 900px;
+      flex-direction: column;
+    }
+
+    .signin-left,
+    .signin-right {
+      padding: 40px 30px;
+    }
+
+    .welcome-title {
+      font-size: 28px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .signin-card {
+      width: 95vw;
+      margin: 20px;
+      border-radius: 16px;
+    }
+
+    .signin-left,
+    .signin-right {
+      padding: 30px 20px;
+    }
+
+    .welcome-title {
+      font-size: 24px;
+    }
+
+    .signin-title {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+  }
+}
+
+@layer utilities {
+  /* Animation keyframes */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  /* Custom scrollbar utilities */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .high-contrast {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
