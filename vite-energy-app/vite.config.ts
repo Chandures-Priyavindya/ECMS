@@ -11,7 +11,18 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': 'http://localhost:5000',
+      // Send ONLY clustering requests to FastAPI
+      '^/api/clustering': {
+        target: 'http://localhost:8000', // FastAPI running here
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/clustering/, '/api/clustering'),
+      },
+      // Everything else under /api goes to Node.js backend
+      '^/api': {
+        target: 'http://localhost:5000', // Node.js backend
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '/api'),
+      },
     },
   },
   resolve: {

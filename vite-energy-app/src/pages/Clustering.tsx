@@ -1,8 +1,22 @@
+
+
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { FaBolt, FaCogs, FaBell, FaUsers, FaCog,FaRobot,FaTachometerAlt } from 'react-icons/fa';
-import { ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import {
+  FaBolt, FaCogs, FaBell, FaUsers, FaCog, FaRobot, FaTachometerAlt,
+} from 'react-icons/fa';
+import {
+  ResponsiveContainer,
+  ScatterChart,
+  Scatter,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from 'recharts';
 
 const Clustering: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -11,16 +25,19 @@ const Clustering: React.FC = () => {
   const [yVar, setYVar] = useState<string>('');
   const [clusters, setClusters] = useState<any[]>([]);
   const [silhouette, setSilhouette] = useState<number | null>(null);
+  const [numClusters, setNumClusters] = useState<number>(3);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
     setFile(selectedFile);
+    setError(null);
     if (!selectedFile) return;
 
-    // Fetch available variables (assumes backend returns variable names)
     const formData = new FormData();
     formData.append('file', selectedFile);
+
     try {
       const res = await axios.post('/api/clustering/variables', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -28,184 +45,166 @@ const Clustering: React.FC = () => {
       setVariables(res.data.variables || []);
       setXVar(res.data.variables?.[0] || '');
       setYVar(res.data.variables?.[1] || '');
+      setClusters([]);
+      setSilhouette(null);
     } catch (err) {
       console.error(err);
-      alert('Failed to fetch variables.');
+      setError('Failed to fetch variables.');
     }
   };
 
   const handleClustering = async () => {
-    if (!file || !xVar || !yVar) return alert('Please upload a file and select variables.');
+    if (!file) return setError('Please upload a file.');
+    if (!xVar || !yVar) return setError('Please select both X and Y variables.');
 
     setLoading(true);
+    setError(null);
+
     const formData = new FormData();
     formData.append('file', file);
     formData.append('xVar', xVar);
     formData.append('yVar', yVar);
+    formData.append('numClusters', numClusters.toString());
 
     try {
       const res = await axios.post('/api/clustering', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      setClusters(res.data.clusters || []);
-      setSilhouette(res.data.silhouette_score || null);
+
+      if (res.data.error) {
+        setError(res.data.error);
+      } else {
+        setClusters(res.data.clusters || []);
+        setSilhouette(res.data.silhouette_score || null);
+      }
     } catch (err) {
       console.error(err);
-      alert('Clustering failed.');
+      setError('Clustering failed.');
     } finally {
       setLoading(false);
     }
   };
 
+  const resetAll = () => {
+    setFile(null);
+    setVariables([]);
+    setXVar('');
+    setYVar('');
+    setClusters([]);
+    setSilhouette(null);
+    setError(null);
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      < div className="w-64 bg-blue-900 text-white flex flex-col">
+      <div className="w-64 bg-blue-900 text-white flex flex-col sticky top-0 h-screen">
         <div className="p-4 font-bold text-xl flex items-center">
           <FaBolt className="mr-2" /> EnergyTrack
         </div>
         <nav className="flex-1 p-4 space-y-4">
-          <div className="space-y-2">
-            <Link to="/" className="flex items-center  hover:text-yellow-400" >
-              <FaTachometerAlt className="mr-2" /> Dashboard
-            </Link>
-            <div className="flex items-center">
-              <FaCogs className="mr-2" /> Machines
-            </div>
-            <Link to="/clustering" className="flex items-center text-yellow-400 font-semibold">
-              <FaRobot className="mr-2" />AI Clustering
-            </Link>
-            <div className="flex items-center">
-              <FaBolt className="mr-2" /> Energy Tracker
-            </div>
-            <div className="flex items-center">
-              <FaBell className="mr-2" /> Alerts
-            </div>
-            <div className="flex items-center">
-              <FaUsers className="mr-2" /> User Management
-            </div>
-          </div>
+          <Link to="/" className="flex items-center hover:text-yellow-400">
+            <FaTachometerAlt className="mr-2" /> Dashboard
+          </Link>
+          <div className="flex items-center"><FaCogs className="mr-2" /> Machines</div>
+          <Link to="/clustering" className="flex items-center text-yellow-400 font-semibold">
+            <FaRobot className="mr-2" /> AI Clustering
+          </Link>
+          <div className="flex items-center"><FaBolt className="mr-2" /> Energy Tracker</div>
+          <div className="flex items-center"><FaBell className="mr-2" /> Alerts</div>
+          <div className="flex items-center"><FaUsers className="mr-2" /> User Management</div>
           <div className="mt-4 border-t border-white/20 pt-4">
-            <div className="flex items-center">
-              <FaCog className="mr-2" /> Settings
-            </div>
+            <div className="flex items-center"><FaCog className="mr-2" /> Settings</div>
           </div>
         </nav>
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-y-auto p-4 sm:p-6 lg:p-8">
-        <div className="max-w-6xl mx-auto w-full space-y-6">
+      <main className="flex-1 flex flex-col overflow-y-auto p-6">
+        <div className="max-w-7xl mx-auto w-full space-y-6">
           <header>
             <h1 className="text-3xl font-bold text-gray-800 mb-2">AI Clustering</h1>
-            <p className="text-gray-600">Upload a CSV file, select variables, and discover patterns.</p>
+            <p className="text-gray-600">Upload CSV, select variables, choose cluster count, and analyze patterns.</p>
           </header>
 
-          {/* File Upload & Variable Selection */}
-          <div className="bg-white rounded-lg shadow p-4 space-y-4 sm:space-y-0 sm:flex sm:items-center sm:justify-between gap-4">
-            <label
-              htmlFor="file-upload"
-              className="flex items-center justify-center border border-gray-300 rounded px-4 py-2 text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition"
-            >
+          {/* Controls */}
+          <section className="bg-white rounded-lg shadow p-6 flex flex-wrap gap-4 items-center">
+            <label htmlFor="file-upload" className="border border-gray-300 rounded px-4 py-2 cursor-pointer hover:bg-gray-100">
               Choose CSV
-              <input
-                id="file-upload"
-                type="file"
-                accept=".csv"
-                onChange={handleFileChange}
-                className="hidden"
-              />
+              <input type="file" id="file-upload" accept=".csv" onChange={handleFileChange} className="hidden" />
             </label>
 
             {variables.length > 0 && (
-              <div className="flex flex-col sm:flex-row gap-2 flex-1">
-                <select
-                  value={xVar}
-                  onChange={(e) => setXVar(e.target.value)}
-                  className="border border-gray-300 rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-                >
-                  {variables.map((v) => (
-                    <option key={v} value={v}>
-                      X: {v}
-                    </option>
-                  ))}
+              <>
+                <select value={xVar} onChange={(e) => setXVar(e.target.value)} className="border rounded px-3 py-2">
+                  {variables.map(v => <option key={v} value={v}>X: {v}</option>)}
                 </select>
-                <select
-                  value={yVar}
-                  onChange={(e) => setYVar(e.target.value)}
-                  className="border border-gray-300 rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-                >
-                  {variables.map((v) => (
-                    <option key={v} value={v}>
-                      Y: {v}
-                    </option>
-                  ))}
+                <select value={yVar} onChange={(e) => setYVar(e.target.value)} className="border rounded px-3 py-2">
+                  {variables.map(v => <option key={v} value={v}>Y: {v}</option>)}
                 </select>
-              </div>
+                <input
+                  type="number"
+                  min={2}
+                  max={10}
+                  value={numClusters}
+                  onChange={(e) => setNumClusters(parseInt(e.target.value))}
+                  className="border rounded px-3 py-2 w-28"
+                  placeholder="Clusters"
+                />
+              </>
             )}
 
             <button
               onClick={handleClustering}
               disabled={loading}
-              className="px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700 transition w-full sm:w-auto"
+              className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
             >
               {loading ? 'Clustering...' : 'Run Clustering'}
             </button>
-          </div>
 
-          {/* Validation Metric */}
+            <button onClick={resetAll} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">
+              Reset
+            </button>
+          </section>
+
+          {error && <p className="text-red-600 text-sm">{error}</p>}
+
+          {/* Silhouette Score */}
           {silhouette !== null && (
-            <div className="bg-white p-4 rounded-lg shadow">
+            <section className="bg-white p-6 rounded-lg shadow">
               <h2 className="text-lg font-semibold text-gray-800 mb-2">Validation Metric</h2>
-              <p className="text-gray-700">
-                Silhouette Score:{' '}
-                <span className="font-semibold text-blue-600">
-                  {silhouette.toFixed(3)}
-                </span>
-              </p>
-            </div>
+              <p className="text-gray-700">Silhouette Score: <span className="text-blue-600 font-semibold">{silhouette.toFixed(3)}</span></p>
+            </section>
           )}
 
-          {/* Scatter Plot */}
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Cluster Scatter Plot</h2>
-            <div className="w-full h-64">
-              <ResponsiveContainer width="101%" height="100%">
-                <ScatterChart>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="x" name={xVar} />
-                  <YAxis dataKey="y" name={yVar} />
-                  <Tooltip />
-                  <Scatter data={clusters} fill="#3b82f6" />
-                </ScatterChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Cluster Details Table */}
-          <div className="bg-white p-4 rounded-lg shadow overflow-x-auto">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Cluster Details</h2>
-            <table className="min-w-full text-sm text-left text-gray-600">
-              <thead className="text-xs uppercase bg-gray-100 text-gray-700">
-                <tr>
-                  <th className="px-4 py-2">ID</th>
-                  <th className="px-4 py-2">{xVar || 'X'}</th>
-                  <th className="px-4 py-2">{yVar || 'Y'}</th>
-                  <th className="px-4 py-2">Cluster</th>
-                </tr>
-              </thead>
-              <tbody>
-                {clusters.map((point: any, idx) => (
-                  <tr key={idx} className="bg-white border-b hover:bg-gray-50 transition">
-                    <td className="px-4 py-2">{idx}</td>
-                    <td className="px-4 py-2">{point.x.toFixed(2)}</td>
-                    <td className="px-4 py-2">{point.y.toFixed(2)}</td>
-                    <td className="px-4 py-2">{point.cluster}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {/* Bubble Chart */}
+          {clusters.length > 0 && (
+            <section className="bg-white p-6 rounded-lg shadow">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                Cluster Bubble Plot ({[...new Set(clusters.map((c) => c.cluster))].length} Clusters)
+              </h2>
+              <div className="w-full h-[400px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ScatterChart>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis type="number" dataKey="x" name={xVar} label={{ value: xVar, position: 'insideBottomRight', offset: -10 }} />
+                    <YAxis type="number" dataKey="y" name={yVar} label={{ value: yVar, angle: -90, position: 'insideleft' ,dx: -20}} />
+                    <Tooltip formatter={(val: number) => val.toFixed(2)} />
+                    <Legend />
+                    {[...new Set(clusters.map(c => c.cluster))].map((clusterId, idx) => (
+                      <Scatter
+                        key={clusterId}
+                        name={`Cluster ${clusterId}`}
+                        data={clusters.filter(c => c.cluster === clusterId)}
+                        fill={['#3b82f6', '#f97316', '#10b981', '#e11d48', '#6366f1', '#22d3ee', '#a855f7', '#facc15'][idx % 8]}
+                        shape="circle"
+                      />
+                    ))}
+                  </ScatterChart>
+                </ResponsiveContainer>
+              </div>
+            </section>
+          )}
         </div>
       </main>
     </div>
@@ -213,5 +212,3 @@ const Clustering: React.FC = () => {
 };
 
 export default Clustering;
-
-
