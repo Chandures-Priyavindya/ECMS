@@ -38,8 +38,8 @@ export default function Sidebar() {
                 key={item.name}
                 to={item.href}
                 className={cn(
-                  "group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                  isActive ? "bg-blue-700 text-white" : "text-blue-100 hover:text-blue-300",
+                  "group flex items-center px-3 py-2 text-sm font-medium transition-colors",
+                  isActive ? "text-cyan-300" : "text-blue-100 hover:text-cyan-300",
                 )}
               >
                 <item.icon className="mr-3 h-5 w-5" />
@@ -58,8 +58,8 @@ export default function Sidebar() {
                 key={item.name}
                 to={item.href}
                 className={cn(
-                  "group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                  isActive ? "bg-blue-700 text-white" : "text-blue-100 hover:text-blue-300",
+                  "group flex items-center px-3 py-2 text-sm font-medium transition-colors",
+                  isActive ? "text-cyan-300" : "text-blue-100 hover:text-cyan-300",
                 )}
               >
                 <item.icon className="mr-3 h-5 w-5" />
