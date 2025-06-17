@@ -43,18 +43,15 @@ export default function EnergyTracker() {
           </div>
           <Button className="bg-[#091053] hover:bg-[#1424B9] text-white px-6 py-2 rounded-lg font-medium">Share</Button>
         </div>
-
 <Card className="bg-white shadow-sm p-6">
-  <CardHeader className="pb-6">
+  <CardHeader className="pb-4">
     <CardTitle className="text-lg font-semibold text-gray-900">Filters</CardTitle>
   </CardHeader>
   <CardContent>
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
-      
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {/* Search Input */}
-      <div className="flex flex-col justify-center">
-        {/* Empty title space for alignment */}
-        <div className="mb-2 h-5" />
+      <div className="flex flex-col space-y-2">
+        <label className="text-sm font-semibold text-gray-700">Search</label>
         <Input
           placeholder="Search Machines..."
           value={searchTerm}
@@ -65,30 +62,28 @@ export default function EnergyTracker() {
       </div>
 
       {/* Chart Type Buttons with Title */}
-      <div className="flex flex-col">
-        <h3 className="mb-2 text-sm font-semibold text-gray-700">Chart Type</h3>
-        <div className="flex bg-white shadow-md rounded-lg p-1 h-14" style={{ boxShadow: "0px 4px 4px rgba(0,0,0,0.25)" }}>
+      <div className="flex flex-col space-y-2">
+        <label className="text-sm font-semibold text-gray-700">Chart Type</label>
+        <div className="flex bg-white shadow-md rounded-lg p-1 h-12 space-x-2" style={{ boxShadow: "0px 4px 4px rgba(0,0,0,0.25)" }}>
           <Button
             variant={chartType === "bar" ? "default" : "ghost"}
             onClick={() => setChartType("bar")}
-            className={`flex-1 text-sm font-medium rounded-md ${
+            className={`flex-1 text-sm font-medium rounded-md h-10 ${
               chartType === "bar"
                 ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-600 hover:text-gray-900"
+                : "text-gray-600 hover:bg-indigo-100 hover:text-indigo-700"
             }`}
-            style={{ minWidth: 100, height: 46, maxHeight: 46 }}
           >
             Bar Chart
           </Button>
           <Button
             variant={chartType === "line" ? "default" : "ghost"}
             onClick={() => setChartType("line")}
-            className={`flex-1 text-sm font-medium rounded-md ${
+            className={`flex-1 text-sm font-medium rounded-md h-10 ${
               chartType === "line"
                 ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-600 hover:text-gray-900"
+                : "text-gray-600 hover:bg-indigo-100 hover:text-indigo-700"
             }`}
-            style={{ minWidth: 100, height: 46, maxHeight: 46 }}
           >
             Line Chart
           </Button>
@@ -96,11 +91,11 @@ export default function EnergyTracker() {
       </div>
 
       {/* Severity Filter with Title */}
-      <div className="flex flex-col">
-        <h3 className="mb-2 text-sm font-semibold text-gray-700">Severity</h3>
+      <div className="flex flex-col space-y-2">
+        <label className="text-sm font-semibold text-gray-700">Severity</label>
         <Select value={severityFilter} onValueChange={setSeverityFilter}>
           <SelectTrigger
-            className="bg-white border border-gray-300 rounded-md h-14 shadow-md w-full max-w-[188px]"
+            className="bg-white border border-gray-300 rounded-md h-12 shadow-md"
             style={{ boxShadow: "0px 4px 4px rgba(0,0,0,0.25)" }}
           >
             <SelectValue placeholder="All Severities" />
@@ -115,11 +110,11 @@ export default function EnergyTracker() {
       </div>
 
       {/* Machine Filter with Title */}
-      <div className="flex flex-col">
-        <h3 className="mb-2 text-sm font-semibold text-gray-700">Machine</h3>
+      <div className="flex flex-col space-y-2">
+        <label className="text-sm font-semibold text-gray-700">Machine</label>
         <Select value={machineFilter} onValueChange={setMachineFilter}>
           <SelectTrigger
-            className="bg-white border border-gray-300 rounded-md h-14 shadow-md w-full"
+            className="bg-white border border-gray-300 rounded-md h-12 shadow-md"
             style={{ boxShadow: "0px 4px 4px rgba(0,0,0,0.25)" }}
           >
             <SelectValue placeholder="All Machines" />
@@ -132,10 +127,10 @@ export default function EnergyTracker() {
           </SelectContent>
         </Select>
       </div>
-      
     </div>
   </CardContent>
 </Card>
+
 
 
 
