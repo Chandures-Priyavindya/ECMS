@@ -195,27 +195,31 @@ export default function EnergyTracker() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center p-6 bg-blue-50 rounded-lg border border-blue-100">
-                <div className="text-sm text-gray-600 mb-1">Total Energy Consumption (MTD)</div>
-                <div className="text-2xl font-bold text-blue-600">3,428 kWh</div>
-                <div className="text-xs text-gray-500">+4% from last month</div>
-              </div>
-              <div className="text-center p-6 bg-red-50 rounded-lg border border-red-100">
-                <div className="text-sm text-gray-600 mb-1">Highest Consumer</div>
-                <div className="text-2xl font-bold text-red-500">CNC Machine</div>
-                <div className="text-xs text-gray-500">+6% from last week</div>
-              </div>
-              <div className="text-center p-6 bg-green-50 rounded-lg border border-green-100">
-                <div className="text-sm text-gray-600 mb-1">Energy Efficiency</div>
-                <div className="text-2xl font-bold text-green-600">87%</div>
-                <div className="text-xs text-gray-500">+2% from last month</div>
-              </div>
-              <div className="text-center p-6 bg-red-50 rounded-lg border border-red-100">
-                <div className="text-sm text-gray-600 mb-1">Active Alerts</div>
-                <div className="text-2xl font-bold text-red-500">3</div>
-                <div className="text-xs text-gray-500">2 high priority</div>
-              </div>
-            </div>
+  <div className="w-[232px] h-[116px] text-center p-4 bg-blue-50 rounded-[15px] shadow-[0px_4px_4px_rgba(0,140,255,0.25)]">
+    <div className="text-sm text-gray-600 mb-1">Total Energy Consumption (MTD)</div>
+    <div className="text-2xl font-bold text-blue-600">3,428 kWh</div>
+    <div className="text-xs text-gray-500">+4% from last month</div>
+  </div>
+
+  <div className="w-[232px] h-[116px] text-center p-4 bg-red-50 rounded-[15px] shadow-[0px_4px_4px_rgba(255,0,0,0.25)]">
+    <div className="text-sm text-gray-600 mb-1">Highest Consumer</div>
+    <div className="text-2xl font-bold text-red-500">CNC Machine</div>
+    <div className="text-xs text-gray-500">+6% from last week</div>
+  </div>
+
+  <div className="w-[232px] h-[116px] text-center p-4 bg-green-50 rounded-[15px] shadow-[0px_4px_4px_rgba(0,128,0,0.25)]">
+    <div className="text-sm text-gray-600 mb-1">Energy Efficiency</div>
+    <div className="text-2xl font-bold text-green-600">87%</div>
+    <div className="text-xs text-gray-500">+2% from last month</div>
+  </div>
+
+  <div className="w-[232px] h-[116px] text-center p-4 bg-red-50 rounded-[15px] shadow-[0px_4px_4px_rgba(255,0,0,0.25)]">
+    <div className="text-sm text-gray-600 mb-1">Active Alerts</div>
+    <div className="text-2xl font-bold text-red-500">3</div>
+    <div className="text-xs text-gray-500">2 high priority</div>
+  </div>
+</div>
+
           </CardContent>
         </Card>
       </div>

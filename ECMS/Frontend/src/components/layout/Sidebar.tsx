@@ -2,6 +2,7 @@
 import { Link, useLocation } from "react-router-dom"
 import { cn } from "../../lib/utils"
 import { LayoutDashboard, Settings, Zap, Users, AlertTriangle, Activity, Cpu } from "lucide-react"
+import logo from '../../assets/images/energylogo.png';
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -22,7 +23,7 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="flex h-16 items-center px-6">
         <div className="flex items-center space-x-2">
-          <Zap className="h-8 w-8 text-yellow-400" />
+            <img src={logo} alt="Logo" className="energylogo.png" />
           <span className="text-xl font-bold">EnergyTrack</span>
         </div>
       </div>
