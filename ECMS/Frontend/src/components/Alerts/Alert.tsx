@@ -45,7 +45,7 @@ const Alert: React.FC = () => {
 
       <div className="flex-1 p-4 sm:p-8 bg-gray-100 min-h-screen">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <h1 className="text-2xl font-semibold text-gray-800">User Management</h1>
+          <h1 className="text-2xl font-semibold text-gray-800">Alerts</h1>
           <button className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded shadow text-sm">
             + Add User
           </button>

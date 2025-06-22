@@ -129,7 +129,6 @@ export default function EnergyDashboard() {
             >
               Export Report
             </button>
-            <div className="mt-1 text-sm">Admin User ▾</div>
           </div>
         </div>
 
@@ -202,7 +201,7 @@ export default function EnergyDashboard() {
             <div className="text-red-500">{error}</div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={displayedData} margin={{ top: 20, right: 30, left: 40, bottom: 60 }}>
+              <LineChart data={displayedData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
                 <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
                 <XAxis 
                   dataKey="name" 
