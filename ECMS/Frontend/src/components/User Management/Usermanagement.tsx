@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import DashboardSidebar from '../Layouts/DashboardSidebar';
+import DashboardSidebar from '../Layouts/Dashboardsidebar';
 import { Pencil, Trash } from 'lucide-react';
 
 interface User {
