@@ -7,6 +7,9 @@ import Signup from "./components/Sign up/Signup";
 import Alert from "./components/Alerts/Alert";
 import Clustering from "./components/Clustering/Clustering";
 
+import EnergyTracker from "./components/Energy Tracking/pages/EnergyTracker";
+
+
 function App() {
   return (
     <Router>
@@ -18,6 +21,10 @@ function App() {
         <Route path="/user-management" element={<Usermanagement />} />
         <Route path="/alert" element={<Alert />} />
         <Route path="/clustering" element={<Clustering />} />
+
+        <Route path="/energy-tracker" element={<EnergyTracker />} />
+        
+
         
       </Routes>
     </Router>
