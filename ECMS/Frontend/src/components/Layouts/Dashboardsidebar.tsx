@@ -56,7 +56,16 @@ const DashboardSidebar: React.FC = () => {
 
             <li className="flex items-center gap-3">
               <MdOutlineMonitorHeart size={18} />
-              <span className="text-gray-300">Energy Tracker</span>
+              <Link
+                to="/energy-tracker"
+                className={`${
+                  currentPath === "/energy-tracker"
+                    ? "text-blue-300 font-semibold"
+                    : "text-gray-300 hover:text-blue-300"
+                }`}
+              >
+                Energy Tracker
+              </Link>
             </li>
 
             <li className="flex items-center gap-3">
