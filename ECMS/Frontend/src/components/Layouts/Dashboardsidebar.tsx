@@ -61,16 +61,7 @@ const DashboardSidebar: React.FC = () => {
 
             <li className="flex items-center gap-3">
               <AiOutlineCluster size={18} />
-               <Link
-                to="/clustering"
-                className={`${
-                  currentPath === "/clustering"
-                    ? "text-blue-300 font-semibold"
-                    : "text-gray-300 hover:text-blue-300"
-                }`}
-              >
-                AI Clustering
-              </Link>
+              <span className="text-gray-300">AI Clustering</span>
             </li>
 
             <li className="flex items-center gap-3">

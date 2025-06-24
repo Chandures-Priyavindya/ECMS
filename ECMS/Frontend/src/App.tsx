@@ -5,7 +5,6 @@ import Usermanagement from "./components/User Management/Usermanagement";
 import Signin from "./components/Sign In/Signin";
 import Signup from "./components/Sign up/Signup";
 import Alert from "./components/Alerts/Alert";
-import Clustering from "./components/Clustering/Clustering";
 
 function App() {
   return (
@@ -17,7 +16,6 @@ function App() {
         <Route path="/machines" element={<MachineManagement />} />
         <Route path="/user-management" element={<Usermanagement />} />
         <Route path="/alert" element={<Alert />} />
-        <Route path="/clustering" element={<Clustering />} />
         
       </Routes>
     </Router>
