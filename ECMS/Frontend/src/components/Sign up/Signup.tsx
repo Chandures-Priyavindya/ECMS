@@ -1,13 +1,177 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import React, { useState } from 'react';
+// import { useNavigate } from 'react-router-dom';
+
+// const Signup: React.FC = () => {
+//   const navigate = useNavigate();
+//   const [role, setRole] = useState('Customer');
+//   const [termsAccepted, setTermsAccepted] = useState(false);
+
+//   const handleSigninClick = () => {
+//     navigate('/');
+//   };
+
+//   return (
+//     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#030617] to-[#000845]">
+//       <div className="bg-white rounded-2xl shadow-md w-full max-w-5xl flex p-10">
+//         {/* Left Section */}
+//         <div className="w-1/2 flex flex-col justify-center pr-10">
+//           <h1 className="text-3xl font-bold text-[#030675] mb-2">Hello!</h1>
+//           <p className="text-sm text-gray-600">
+//             Enter your personal details and start journey with us
+//           </p>
+//         </div>
+
+//         {/* Right Section */}
+//         <div className="w-1/2">
+//           <h2 className="text-lg font-bold text-black mb-6 text-center">SIGN UP</h2>
+//           <form className="flex flex-col space-y-4">
+//             <input
+//               type="text"
+//               placeholder="Full Name"
+//               className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#030675]"
+//             />
+//             <input
+//               type="email"
+//               placeholder="Email"
+//               className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#030675]"
+//             />
+//             <input
+//               type="tel"
+//               placeholder="Phone Number"
+//               className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#030675]"
+//             />
+//             <input
+//               type="text"
+//               placeholder="Company Name"
+//               className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#030675]"
+//             />
+
+//             <div className="flex items-center space-x-4">
+//               <span className="text-sm font-medium text-gray-700">Role</span>
+//               <label className="flex items-center space-x-1">
+//                 <input
+//                   type="radio"
+//                   name="role"
+//                   value="Customer"
+//                   checked={role === 'Customer'}
+//                   onChange={() => setRole('Customer')}
+//                   className="accent-[#030675]"
+//                 />
+//                 <span className="text-sm text-gray-700">Customer</span>
+//               </label>
+//               <label className="flex items-center space-x-1">
+//                 <input
+//                   type="radio"
+//                   name="role"
+//                   value="Support Agent"
+//                   checked={role === 'Support Agent'}
+//                   onChange={() => setRole('Support Agent')}
+//                   className="accent-[#030675]"
+//                 />
+//                 <span className="text-sm text-gray-700">Support Agent</span>
+//               </label>
+//             </div>
+
+//             <input
+//               type="password"
+//               placeholder="Password"
+//               className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#030675]"
+//             />
+//             <input
+//               type="password"
+//               placeholder="Re-enter Password"
+//               className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#030675]"
+//             />
+
+//             <div className="flex items-center space-x-2">
+//               <input
+//                 type="checkbox"
+//                 id="terms"
+//                 checked={termsAccepted}
+//                 onChange={() => setTermsAccepted(!termsAccepted)}
+//                 className="accent-[#030675]"
+//               />
+//               <label htmlFor="terms" className="text-xs text-gray-600">
+//                 I accept the Terms & Conditions
+//               </label>
+//             </div>
+
+//             <button
+//               type="submit"
+//               className="bg-[#030675] text-white py-2 rounded-md font-semibold hover:bg-[#020560] transition"
+//             >
+//               Create Account
+//             </button>
+
+//             <p className="text-sm text-center text-gray-600">
+//               Already have an account?{' '}
+//               <button
+//                 type="button"
+//                 className="text-[#030675] font-semibold hover:underline"
+//                 onClick={handleSigninClick}
+//               >
+//                 SIGN IN
+//               </button>
+//             </p>
+//           </form>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Signup;
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
-  const [role, setRole] = useState('Customer');
+  const [role, setRole] = useState("Customer");
   const [termsAccepted, setTermsAccepted] = useState(false);
 
-  const handleSigninClick = () => {
-    navigate('/');
+  // Input states
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSigninClick = () => navigate("/signin");
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    if (password !== confirmPassword) {
+      return setError("Passwords do not match.");
+    }
+    if (!termsAccepted) {
+      return setError("You must accept the terms and conditions.");
+    }
+
+    try {
+      const res = await axios.post("http://localhost:5000/auth/signup", {
+        fullName,
+        email,
+        phoneNumber,
+        companyName,
+        role,
+        password,
+        termsAccepted,
+      });
+
+      alert(res.data.message || "User created successfully.");
+      navigate("/signin");
+    } catch (error: any) {
+      setError(
+        error.response?.data?.error ||
+          error.response?.data?.message ||
+          "Error signing up."
+      );
+    }
   };
 
   return (
@@ -17,33 +181,48 @@ const Signup: React.FC = () => {
         <div className="w-1/2 flex flex-col justify-center pr-10">
           <h1 className="text-3xl font-bold text-[#030675] mb-2">Hello!</h1>
           <p className="text-sm text-gray-600">
-            Enter your personal details and start journey with us
+            Enter your personal details and start your journey with us
           </p>
         </div>
 
         {/* Right Section */}
         <div className="w-1/2">
           <h2 className="text-lg font-bold text-black mb-6 text-center">SIGN UP</h2>
-          <form className="flex flex-col space-y-4">
+          <form className="flex flex-col space-y-4" onSubmit={handleSignup}>
+            {error && (
+              <p className="text-center text-red-500 text-sm mb-2">{error}</p>
+            )}
             <input
               type="text"
               placeholder="Full Name"
-              className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#030675]"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md"
+              required
             />
             <input
               type="email"
               placeholder="Email"
-              className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#030675]"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md"
+              required
             />
             <input
               type="tel"
               placeholder="Phone Number"
-              className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#030675]"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md"
+              required
             />
             <input
               type="text"
               placeholder="Company Name"
-              className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#030675]"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md"
+              required
             />
 
             <div className="flex items-center space-x-4">
@@ -51,22 +230,18 @@ const Signup: React.FC = () => {
               <label className="flex items-center space-x-1">
                 <input
                   type="radio"
-                  name="role"
                   value="Customer"
-                  checked={role === 'Customer'}
-                  onChange={() => setRole('Customer')}
-                  className="accent-[#030675]"
+                  checked={role === "Customer"}
+                  onChange={() => setRole("Customer")}
                 />
                 <span className="text-sm text-gray-700">Customer</span>
               </label>
               <label className="flex items-center space-x-1">
                 <input
                   type="radio"
-                  name="role"
                   value="Support Agent"
-                  checked={role === 'Support Agent'}
-                  onChange={() => setRole('Support Agent')}
-                  className="accent-[#030675]"
+                  checked={role === "Support Agent"}
+                  onChange={() => setRole("Support Agent")}
                 />
                 <span className="text-sm text-gray-700">Support Agent</span>
               </label>
@@ -75,12 +250,18 @@ const Signup: React.FC = () => {
             <input
               type="password"
               placeholder="Password"
-              className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#030675]"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md"
+              required
             />
             <input
               type="password"
-              placeholder="Re-enter Password"
-              className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#030675]"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md"
+              required
             />
 
             <div className="flex items-center space-x-2">
@@ -89,7 +270,6 @@ const Signup: React.FC = () => {
                 id="terms"
                 checked={termsAccepted}
                 onChange={() => setTermsAccepted(!termsAccepted)}
-                className="accent-[#030675]"
               />
               <label htmlFor="terms" className="text-xs text-gray-600">
                 I accept the Terms & Conditions
@@ -104,7 +284,7 @@ const Signup: React.FC = () => {
             </button>
 
             <p className="text-sm text-center text-gray-600">
-              Already have an account?{' '}
+              Already have an account?{" "}
               <button
                 type="button"
                 className="text-[#030675] font-semibold hover:underline"
@@ -121,3 +301,5 @@ const Signup: React.FC = () => {
 };
 
 export default Signup;
+
+

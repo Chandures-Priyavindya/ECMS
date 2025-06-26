@@ -15,6 +15,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Signin />} />
+        <Route path="/signin" element={<Signin />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<EnergyDashboard />} />
         <Route path="/machines" element={<MachineManagement />} />
@@ -32,3 +33,4 @@ function App() {
 }
 
 export default App;
+
