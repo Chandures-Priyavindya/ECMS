@@ -4,11 +4,11 @@ import axios from "axios";
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
-  const [role, setRole] = useState("Customer");
   const [termsAccepted, setTermsAccepted] = useState(false);
 
   // Input states
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -31,11 +31,11 @@ const Signup: React.FC = () => {
 
     try {
       const res = await axios.post("http://localhost:5000/auth/signup", {
-        fullName,
+        firstName,
+        lastName,
         email,
         phoneNumber,
         companyName,
-        role,
         password,
         termsAccepted,
       });
@@ -71,9 +71,18 @@ const Signup: React.FC = () => {
             )}
             <input
               type="text"
-              placeholder="Full Name"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              placeholder="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md"
+              required
+            />
+
+             <input
+              type="text"
+              placeholder="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
               className="w-full px-4 py-2 border rounded-md"
               required
             />
@@ -101,28 +110,6 @@ const Signup: React.FC = () => {
               className="w-full px-4 py-2 border rounded-md"
               required
             />
-
-            <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium text-gray-700">Role</span>
-              <label className="flex items-center space-x-1">
-                <input
-                  type="radio"
-                  value="Customer"
-                  checked={role === "Customer"}
-                  onChange={() => setRole("Customer")}
-                />
-                <span className="text-sm text-gray-700">Customer</span>
-              </label>
-              <label className="flex items-center space-x-1">
-                <input
-                  type="radio"
-                  value="Support Agent"
-                  checked={role === "Support Agent"}
-                  onChange={() => setRole("Support Agent")}
-                />
-                <span className="text-sm text-gray-700">Support Agent</span>
-              </label>
-            </div>
 
             <input
               type="password"

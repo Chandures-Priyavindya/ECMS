@@ -6,9 +6,9 @@ const router = Router();
 
 // SIGNUP
 router.post('/signup', async (req, res) => {
-  const { fullName, email, phoneNumber, companyName, role, password, termsAccepted } = req.body;
+  const { firstName, lastName, email, phoneNumber, companyName, role, password, termsAccepted } = req.body;
 
-  if (!fullName || !email || !phoneNumber || !companyName || !role || !password) {
+  if (!firstName || !lastName || !email || !phoneNumber || !companyName || !password) {
     return res.status(400).json({ error: 'All fields are required.' });
   }
 
@@ -30,11 +30,11 @@ router.post('/signup', async (req, res) => {
     const passwordHash = await bcrypt.hash(password, 10);
 
     const newUser = {
-      fullName,
+      firstName,
+      lastName,
       email,
       phoneNumber,
       companyName,
-      role,
       passwordHash,
       termsAccepted: true,
       createdAt: new Date(),
