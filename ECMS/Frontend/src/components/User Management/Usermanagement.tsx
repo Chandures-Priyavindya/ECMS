@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DashboardSidebar from '../Layouts/Dashboardsidebar';
 import { Pencil, Trash } from 'lucide-react';
+
 
 interface User {
   name: string;
@@ -23,6 +25,7 @@ const usersData: User[] = [
 
 const UserManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
 
   const filteredUsers = usersData.filter(user =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -35,7 +38,10 @@ const UserManagement: React.FC = () => {
       <div className="flex-1 p-4 sm:p-8 bg-gray-100 min-h-screen">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <h1 className="text-2xl font-semibold text-gray-800">User Management</h1>
-          <button className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded shadow text-sm">
+          <button
+            onClick={() => navigate('/add-user')}
+            className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded shadow text-sm"
+          >
             + Add User
           </button>
         </div>
