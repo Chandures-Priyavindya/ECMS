@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import userRoutes from './routes/userRoutes';
 import AlertModel from './models/Alert';
+import EnergyConsumer from './models/EnergyConsumer';
 
 dotenv.config();
 const app = express();
@@ -46,5 +47,16 @@ app.get('/api/alerts/latest', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch latest alerts' });
+  }
+});
+
+// GET top 5 energy consumers sorted by usage descending
+app.get('/api/energy/top-consumers', async (req, res) => {
+  try {
+    const topConsumers = await EnergyConsumer.find().sort({ usage: -1 }).limit(5);
+    res.json(topConsumers);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch top consumers' });
   }
 });
