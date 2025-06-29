@@ -1,12 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
-import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
+import { Button } from "../ui/button"
+import { Input } from "../ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts"
-import MainLayout from "../components/layout/MainLayout"
+import MainLayout from "../Layouts/MainLayout"
+import Header from "../Layouts/Header"
 
 
 const energyData = [
@@ -32,18 +33,17 @@ export default function EnergyTracker() {
   const [severityFilter, setSeverityFilter] = useState("all")
   const [machineFilter, setMachineFilter] = useState("all")
   const [searchTerm, setSearchTerm] = useState("")
-
+  
   return (
-    <MainLayout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Energy Tracking</h1>
-            <p className="text-gray-600 text-sm">Monitor and analyze energy consumption data</p>
-          </div>
-          <Button className="bg-[#091053] hover:bg-[#1424B9] text-white px-6 py-2 rounded-lg font-medium">Share</Button>
-        </div>
+  <MainLayout>
+    <div className="space-y-6">
+        <Header
+          title = "Energy Tracking"
+          subtitle = "Monitor and analyze energy consumption data"
+      />
+      <div className="flex justify-end">
+        <Button className="bg-[#091053] hover:bg-[#1424B9] text-white px-6 py-2 rounded-lg font-medium">Share</Button>
+      </div>
 <Card className="bg-white shadow-sm p-6">
   <CardHeader className="pb-4">
     <CardTitle className="text-lg font-semibold text-gray-900">Filters</CardTitle>

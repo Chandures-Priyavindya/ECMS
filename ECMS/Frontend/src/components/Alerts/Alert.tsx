@@ -1,5 +1,7 @@
+
 import React, { useState } from 'react';
 import DashboardSidebar from '../Layouts/Dashboardsidebar';
+import Header from "../Layouts/Header";
 
 interface AlertItem {
   severity: 'High' | 'Medium' | 'Low';
@@ -28,32 +30,30 @@ const severityColors: { [key: string]: string } = {
 const Alert: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSeverity, setSelectedSeverity] = useState('All Severities');
-  const [selectedMachine, setSelectedMachine] = useState('All Machine');
+  const [selectedMachine, setSelectedMachine] = useState('All Machines');
 
-  const machinesList = Array.from(new Set(alertsData.map(item => item.machine)));
+  const machinesList = Array.from(new Set(alertsData.map(item => item.machine))).sort();
 
   const filteredData = alertsData.filter(item => {
     const matchesSearch = item.machine.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesSeverity = selectedSeverity === 'All Severities' || item.severity === selectedSeverity;
-    const matchesMachine = selectedMachine === 'All Machine' || item.machine === selectedMachine;
+    const matchesMachine = selectedMachine === 'All Machines' || item.machine === selectedMachine;
     return matchesSearch && matchesSeverity && matchesMachine;
   });
 
   return (
-    <div className="flex">
+    <div className="flex w-full bg-gray-50 overflow-hidden">
       <DashboardSidebar />
 
-      <div className="flex-1 p-4 sm:p-8 bg-gray-100 min-h-screen">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <h1 className="text-2xl font-semibold text-gray-800">Alerts</h1>
-          {/* <button className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded shadow text-sm">
-            + Add User
-          </button>  */}
-        </div>
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden p-4 space-y-4">
+        <Header
+          title="Alerts"
+          subtitle="Filter, review, and respond to machine alerts efficiently"
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div>
-            <label className="block text-gray-700 font-semibold mb-1">Filters</label>
+            <label className="block text-gray-700 font-semibold mb-1">Search Machine</label>
             <input
               type="text"
               placeholder="Search Machines..."
@@ -84,9 +84,9 @@ const Alert: React.FC = () => {
               onChange={(e) => setSelectedMachine(e.target.value)}
               className="w-full border border-gray-300 rounded-md px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option>All Machine</option>
-              {machinesList.map((machine, idx) => (
-                <option key={idx}>{machine}</option>
+              <option>All Machines</option>
+              {machinesList.map((machine) => (
+                <option key={machine}>{machine}</option>
               ))}
             </select>
           </div>
@@ -125,7 +125,6 @@ const Alert: React.FC = () => {
             </tbody>
           </table>
         </div>
-
       </div>
     </div>
   );

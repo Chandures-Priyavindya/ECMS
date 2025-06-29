@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Pencil, Trash } from 'lucide-react';
 import DashboardSidebar from '../Layouts/Dashboardsidebar';
+import Header from "../Layouts/Header";
 
 interface Machine {
   name: string;
@@ -39,11 +40,17 @@ const MachineManagement = () => {
       <DashboardSidebar />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden p-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <h1 className="text-2xl font-semibold text-gray-800">Machine Management</h1>
-          <button className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded shadow text-sm self-end sm:self-auto">
-            + Add Machine
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden p-4 space-y-4">
+              <Header
+                title="Machine Management"
+                subtitle="Centralized control and monitoring of all machines"
+              />
+      
+          <div className="flex justify-end">
+          <button
+            className="bg-[#091053] hover:bg-[#1424B9] text-white px-6 py-2 rounded-lg font-medium"
+          >
+            Add Machine
           </button>
         </div>
 

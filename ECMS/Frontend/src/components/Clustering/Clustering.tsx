@@ -12,6 +12,8 @@ import {
   Legend,
 } from 'recharts';
 import DashboardSidebar from "../Layouts/Dashboardsidebar";
+import Header from "../Layouts/Header";
+import { FiUploadCloud, FiFileText, FiAlertCircle } from "react-icons/fi";
 
 const Clustering: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -90,72 +92,121 @@ const Clustering: React.FC = () => {
     setError(null);
   };
 
-   return (
-    <div className="flex w-screen h-screen bg-gray-100 overflow-hidden">
-      {/* Sidebar */}
+  return (
+    <div className="flex w-full bg-gray-100 overflow-hidden">
       <DashboardSidebar />
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-y-auto p-6">
-        <div className="max-w-7xl mx-auto w-full space-y-6">
-          <header>
-            <h1 className="text-2xl font-semibold text-gray-800">AI Clustering</h1>
-            <p className="text-gray-600">Upload CSV, select variables, choose cluster count, and analyze patterns.</p>
-          </header>
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden p-4 space-y-4">
+        <Header
+          title="AI Clustering"
+          subtitle="Upload CSV, select variables, choose cluster count, and analyze patterns"
+        />
 
-          {/* Controls */}
-          <section className="bg-white rounded-lg shadow p-6 flex flex-wrap gap-4 items-center">
-            <label htmlFor="file-upload" className="border border-gray-300 rounded px-4 py-2 cursor-pointer hover:bg-gray-100">
-              Choose CSV
-              <input type="file" id="file-upload" accept=".csv" onChange={handleFileChange} className="hidden" />
-            </label>
-
-            {variables.length > 0 && (
-              <>
-                <select value={xVar} onChange={(e) => setXVar(e.target.value)} className="border rounded px-3 py-2">
-                  {variables.map(v => <option key={v} value={v}>X: {v}</option>)}
-                </select>
-                <select value={yVar} onChange={(e) => setYVar(e.target.value)} className="border rounded px-3 py-2">
-                  {variables.map(v => <option key={v} value={v}>Y: {v}</option>)}
-                </select>
+        <main className="flex-1 p-6 space-y-6">
+          {/* Step 1: Upload CSV */}
+          <section className="bg-white p-6 rounded-lg shadow-md w-full">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4"> Upload CSV File</h2>
+            <div className="flex items-center gap-6">
+              <label htmlFor="file-upload" className="flex items-center space-x-2 border-2 border-dashed border-gray-400 p-4 rounded-lg cursor-pointer hover:bg-gray-50">
+                <FiUploadCloud size={24} className="text-blue-500" />
+                <span className="text-sm font-medium text-gray-700">Click to upload</span>
                 <input
-                  type="number"
-                  min={2}
-                  max={10}
-                  value={numClusters}
-                  onChange={(e) => setNumClusters(parseInt(e.target.value))}
-                  className="border rounded px-3 py-2 w-28"
-                  placeholder="Clusters"
+                  type="file"
+                  id="file-upload"
+                  accept=".csv"
+                  onChange={handleFileChange}
+                  className="hidden"
                 />
-              </>
+              </label>
+              {file && (
+                <div className="flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-md text-sm text-gray-700">
+                  <FiFileText className="text-gray-500" />
+                  <span>{file.name}</span>
+                </div>
+              )}
+            </div>
+            {!file && (
+              <p className="text-sm text-gray-500 italic mt-2">No file selected yet.</p>
             )}
-
-            <button
-              onClick={handleClustering}
-              disabled={loading}
-              className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-            >
-              {loading ? 'Clustering...' : 'Run Clustering'}
-            </button>
-
-            <button onClick={resetAll} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">
-              Reset
-            </button>
           </section>
 
-          {error && <p className="text-red-600 text-sm">{error}</p>}
-
-          {/* Silhouette Score */}
-          {silhouette !== null && (
-            <section className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-lg font-semibold text-gray-800 mb-2">Validation Metric</h2>
-              <p className="text-gray-700">Silhouette Score: <span className="text-blue-600 font-semibold">{silhouette.toFixed(3)}</span></p>
+          {/* Step 2: Select Variables */}
+          {variables.length > 0 && (
+            <section className="bg-white p-6 rounded-lg shadow-md w-full">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">Select Variables and Cluster Count</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <label className="text-sm text-gray-600">X Variable</label>
+                  <select value={xVar} onChange={(e) => setXVar(e.target.value)} className="w-full border rounded px-3 py-2">
+                    {variables.map(v => <option key={v} value={v}>{v}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-600">Y Variable</label>
+                  <select value={yVar} onChange={(e) => setYVar(e.target.value)} className="w-full border rounded px-3 py-2">
+                    {variables.map(v => <option key={v} value={v}>{v}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-600">Number of Clusters</label>
+                  <input
+                    type="number"
+                    min={2}
+                    max={10}
+                    value={numClusters}
+                    onChange={(e) => setNumClusters(parseInt(e.target.value))}
+                    className="w-full border rounded px-3 py-2"
+                    placeholder="Clusters"
+                  />
+                </div>
+                <div className="flex items-end gap-2">
+                  <button
+                    onClick={handleClustering}
+                    disabled={loading || !xVar || !yVar || !file}
+                    className={`flex-1 px-4 py-2 rounded transition ${
+                      loading || !xVar || !yVar || !file
+                        ? 'bg-gray-400 cursor-not-allowed text-white'
+                        : 'bg-[#091053]  text-white'
+                    }`}
+                  >
+                    {loading ? 'Clustering...' : 'Run Clustering'}
+                  </button>
+                  <button
+                    onClick={resetAll}
+                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
+              {error && (
+                <div className="mt-3 flex items-center text-sm text-red-600">
+                  <FiAlertCircle className="mr-2" />
+                  {error}
+                </div>
+              )}
             </section>
           )}
 
-          {/* Bubble Chart */}
+          {/* Step 3: Silhouette Score */}
+          {silhouette !== null && (
+            <section className="bg-white p-6 rounded-lg shadow-md">
+              <h2 className="text-lg font-semibold text-gray-800 mb-2">Validation Metric</h2>
+              <p className="text-gray-700">
+                Silhouette Score:{' '}
+                <span className="text-blue-600 font-semibold">{silhouette.toFixed(3)}</span>
+              </p>
+              {silhouette < 0.25 && (
+                <p className="text-sm text-red-600 mt-1">
+                  ⚠️ Low silhouette score — clustering may not be meaningful.
+                </p>
+              )}
+            </section>
+          )}
+
+          {/* Step 4: Cluster Bubble Plot */}
           {clusters.length > 0 && (
-            <section className="bg-white p-6 rounded-lg shadow">
+            <section className="bg-white p-6 rounded-lg shadow-md">
               <h2 className="text-lg font-semibold text-gray-800 mb-4">
                 Cluster Bubble Plot ({[...new Set(clusters.map((c) => c.cluster))].length} Clusters)
               </h2>
@@ -163,8 +214,18 @@ const Clustering: React.FC = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <ScatterChart>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" dataKey="x" name={xVar} label={{ value: xVar, position: 'insideBottomRight', offset: -10 }} />
-                    <YAxis type="number" dataKey="y" name={yVar} label={{ value: yVar, angle: -90, position: 'insideleft' ,dx: -20}} />
+                    <XAxis
+                      type="number"
+                      dataKey="x"
+                      name={xVar}
+                      label={{ value: xVar, position: 'insideBottomRight', offset: -10 }}
+                    />
+                    <YAxis
+                      type="number"
+                      dataKey="y"
+                      name={yVar}
+                      label={{ value: yVar, angle: -90, position: 'insideleft', dx: -20 }}
+                    />
                     <Tooltip formatter={(val: number) => val.toFixed(2)} />
                     <Legend />
                     {[...new Set(clusters.map(c => c.cluster))].map((clusterId, idx) => (
@@ -172,7 +233,9 @@ const Clustering: React.FC = () => {
                         key={clusterId}
                         name={`Cluster ${clusterId}`}
                         data={clusters.filter(c => c.cluster === clusterId)}
-                        fill={['#3b82f6', '#f97316', '#10b981', '#e11d48', '#6366f1', '#22d3ee', '#a855f7', '#facc15'][idx % 8]}
+                        fill={
+                          ['#3b82f6', '#f97316', '#10b981', '#e11d48', '#6366f1', '#22d3ee', '#a855f7', '#facc15'][idx % 8]
+                        }
                         shape="circle"
                       />
                     ))}
@@ -181,8 +244,8 @@ const Clustering: React.FC = () => {
               </div>
             </section>
           )}
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };

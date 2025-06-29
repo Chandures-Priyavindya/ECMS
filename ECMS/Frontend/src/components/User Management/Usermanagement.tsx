@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardSidebar from '../Layouts/Dashboardsidebar';
 import { Pencil, Trash } from 'lucide-react';
+import Header from "../Layouts/Header";
 
 
 interface User {
@@ -32,17 +33,21 @@ const UserManagement: React.FC = () => {
   );
 
   return (
-    <div className="flex">
+    <div className="flex w-full bg-gray-50 overflow-hidden">
       <DashboardSidebar />
 
-      <div className="flex-1 p-4 sm:p-8 bg-gray-100 min-h-screen">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <h1 className="text-2xl font-semibold text-gray-800">User Management</h1>
+       <div className="flex-1 flex flex-col min-w-0 overflow-hidden p-4 space-y-4">
+              <Header
+                title="User Management"
+                subtitle="Add, update, or remove users from the system"
+              />
+  
+          <div className="flex justify-end">
           <button
             onClick={() => navigate('/add-user')}
-            className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded shadow text-sm"
+            className="bg-[#091053] hover:bg-blue-900 text-white px-4 py-2 rounded shadow text-sm"
           >
-            + Add User
+            Add User
           </button>
         </div>
 

@@ -7,7 +7,6 @@ import axios from "axios";
 const Signin: React.FC = () => {
   const navigate = useNavigate();
   const [error, setError] = useState("");
-
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -27,12 +26,33 @@ const Signin: React.FC = () => {
     setError("");
 
     try {
-      const res = await axios.post("http://localhost:5000/auth/signin", {
+      // Send signin request to backend
+      const res = await axios.post("http://localhost:5000/api/signin", {
         email: formData.username,
         password: formData.password,
       });
 
-      alert(res.data.message || "Signin successful.");
+      const { token, user, message } = res.data;
+
+      if (!token || !user) {
+        setError("Invalid response from server");
+        return;
+      }
+
+      // Store token in localStorage
+      localStorage.setItem("token", token);
+
+      // Optionally store token expiration date
+      const tokenExpiry = new Date();
+      tokenExpiry.setDate(tokenExpiry.getDate() + 10); // Token expires in 10 days
+      localStorage.setItem("tokenExpiry", tokenExpiry.toString());
+
+      // Store user info in localStorage
+      localStorage.setItem("firstName", user.firstName);
+
+      alert(message || "Signin successful.");
+
+      // Redirect to the dashboard after successful signin
       navigate("/dashboard");
     } catch (err: any) {
       setError(
@@ -48,7 +68,9 @@ const Signin: React.FC = () => {
   return (
     <div
       className="min-h-screen flex items-center justify-center p-4"
-      style={{ background:"linear-gradient(to bottom right, #091053 100%, #001BFF 100%" }}
+      style={{
+        background: "linear-gradient(to bottom right, #091053 100%, #001BFF 100%)",
+      }}
     >
       <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden">
         <div className="flex flex-col lg:flex-row min-h-[600px]">
@@ -60,7 +82,9 @@ const Signin: React.FC = () => {
 
           {/* Right side */}
           <div className="lg:w-1/2 p-8 flex flex-col justify-center">
-            <h2 className="text-2xl font-bold text-slate-800 mb-8 text-center">SIGN IN</h2>
+            <h2 className="text-2xl font-bold text-slate-800 mb-8 text-center">
+              SIGN IN
+            </h2>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
@@ -68,7 +92,10 @@ const Signin: React.FC = () => {
               )}
 
               <div>
-                <label htmlFor="username" className="block text-sm text-gray-500 mb-2">
+                <label
+                  htmlFor="username"
+                  className="block text-sm text-gray-500 mb-2"
+                >
                   Email
                 </label>
                 <input
@@ -83,7 +110,10 @@ const Signin: React.FC = () => {
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm text-gray-500 mb-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm text-gray-500 mb-2"
+                >
                   Password
                 </label>
                 <input
@@ -105,7 +135,10 @@ const Signin: React.FC = () => {
                   checked={formData.rememberMe}
                   onChange={handleInputChange}
                 />
-                <label htmlFor="rememberMe" className="ml-2 text-sm text-gray-600">
+                <label
+                  htmlFor="rememberMe"
+                  className="ml-2 text-sm text-gray-600"
+                >
                   Remember me
                 </label>
               </div>
@@ -137,4 +170,5 @@ const Signin: React.FC = () => {
 };
 
 export default Signin;
+
 

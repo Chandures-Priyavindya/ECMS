@@ -1,26 +1,42 @@
 import { Router } from 'express';
 import bcrypt from 'bcrypt';
-import connectDB from '../db.js'; 
+import jwt from 'jsonwebtoken';
+import { ObjectId } from 'mongodb';
+import connectDB from '../db.js';
 
 const router = Router();
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
 
 // SIGNUP
 router.post('/signup', async (req, res) => {
-  const { firstName, lastName, email, phoneNumber, companyName, role, password, termsAccepted } = req.body;
+  const {
+    firstName,
+    lastName,
+    email,
+    phoneNumber,
+    password,
+    termsAccepted,
+  } = req.body;
 
-  if (!firstName || !lastName || !email || !phoneNumber || !companyName || !password) {
+  if (
+    !firstName ||
+    !lastName ||
+    !email ||
+    !phoneNumber ||
+    !password
+  ) {
     return res.status(400).json({ error: 'All fields are required.' });
   }
 
   if (!termsAccepted) {
-    return res.status(400).json({ error: 'You must accept the terms and conditions to create an account.' });
+    return res.status(400).json({
+      error: 'You must accept the terms and conditions to create an account.',
+    });
   }
 
   try {
-    const client = await connectDB(); 
-    console.log("client:", client); 
-    const db = client.db('myapp');    
-    const users = db.collection('users'); 
+    const db = await connectDB();
+    const users = db.collection('users');
 
     const existingUser = await users.findOne({ email });
     if (existingUser) {
@@ -34,7 +50,6 @@ router.post('/signup', async (req, res) => {
       lastName,
       email,
       phoneNumber,
-      companyName,
       passwordHash,
       termsAccepted: true,
       createdAt: new Date(),
@@ -58,9 +73,8 @@ router.post('/signin', async (req, res) => {
   }
 
   try {
-    const client = await connectDB(); 
-    const db = client.db('myapp');    
-    const users = db.collection('users'); 
+    const db = await connectDB();
+    const users = db.collection('users');
 
     const user = await users.findOne({ email });
     if (!user) {
@@ -72,10 +86,59 @@ router.post('/signin', async (req, res) => {
       return res.status(401).json({ error: 'Invalid password.' });
     }
 
-    return res.status(200).json({ message: 'Signin successful.' });
+    const payload = {
+      userId: user._id.toString(),
+      email: user.email,
+      firstName: user.firstName,
+    };
+
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '10d' });
+
+    return res.status(200).json({
+      message: 'Signin successful.',
+      token,
+      user: {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+       
+      },
+    });
   } catch (error) {
-    console.error(' Error signing in:', error.message, error.stack);
+    console.error('Error signing in:', error.message, error.stack);
     return res.status(500).json({ error: 'Error signing in. Please try again later.' });
+  }
+});
+
+// GET /user - fetch user info by verifying JWT token
+router.get('/user', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization || '';
+    if (!authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Unauthorized: Missing or invalid token' });
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+
+    const db = await connectDB();
+    const users = db.collection('users');
+
+    const user = await users.findOne(
+      { _id: new ObjectId(decoded.userId) },
+      { projection: { firstName: 1 } }
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    return res.json({ firstName: user.firstName });
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    return res.status(401).json({ error: 'Invalid or expired token' });
   }
 });
 

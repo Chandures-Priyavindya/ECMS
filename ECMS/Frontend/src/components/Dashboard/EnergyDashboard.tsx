@@ -4,13 +4,13 @@ import {
   Line,
   XAxis,
   YAxis,
-  Tooltip, 
+  Tooltip,
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
 import DashboardSidebar from "../Layouts/Dashboardsidebar";
+import Header from "../Layouts/Header";
 
-// Mock data for demonstration
 const mockEnergyData = [
   { name: "Mon, Jan 1", kWh: 120 },
   { name: "Tue, Jan 2", kWh: 135 },
@@ -24,7 +24,7 @@ const mockEnergyData = [
 const mockAlerts = [
   { message: "High energy consumption detected in Building A" },
   { message: "Machine M-001 requires maintenance" },
-  { message: "Power factor low in Zone 3" }
+  { message: "Power factor low in Zone 3" },
 ];
 
 const mockSummary = {
@@ -39,33 +39,15 @@ const mockSummary = {
     { name: "Building B", usage: 380 },
     { name: "Building C", usage: 320 },
     { name: "Building D", usage: 280 },
-    { name: "Building E", usage: 220 }
-  ]
+    { name: "Building E", usage: 220 },
+  ],
 };
 
 type EnergyDataItem = { name: string; kWh: number };
 
 export default function EnergyDashboard() {
   const [energyData, setEnergyData] = useState<EnergyDataItem[]>([]);
-  type Summary = {
-    totalConsumption: number;
-    totalConsumptionChange: string;
-    highestConsumer: string;
-    highestConsumerChange: string;
-    energyEfficiency: number;
-    energyEfficiencyChange: string;
-    topConsumers: { name: string; usage: number }[];
-  };
-  
-  const [summary, setSummary] = useState<Summary>({
-    totalConsumption: 0,
-    totalConsumptionChange: "",
-    highestConsumer: "",
-    highestConsumerChange: "",
-    energyEfficiency: 0,
-    energyEfficiencyChange: "",
-    topConsumers: [],
-  });
+  const [summary, setSummary] = useState<typeof mockSummary>(mockSummary);
   const [alerts, setAlerts] = useState<{ message: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<null | string>(null);
@@ -74,14 +56,11 @@ export default function EnergyDashboard() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      // Simulate API call with timeout
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       setEnergyData(mockEnergyData);
       setSummary(mockSummary);
       setAlerts(mockAlerts);
     } catch (err) {
-      console.error(err);
       setError("Failed to fetch dashboard data");
     } finally {
       setLoading(false);
@@ -92,9 +71,10 @@ export default function EnergyDashboard() {
     fetchDashboardData();
   }, [viewMode]);
 
-  function handleExport() {
-    const csvContent = "data:text/csv;charset=utf-8," +
-      ["Day,Energy Consumption (kWh)", ...energyData.map(item => `${item.name},${item.kWh}`)].join("\n");
+  const handleExport = () => {
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      ["Day,Energy Consumption (kWh)", ...energyData.map((item) => `${item.name},${item.kWh}`)].join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -102,34 +82,29 @@ export default function EnergyDashboard() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  }
+  };
 
   const displayedData = viewMode === "7d" ? energyData.slice(-7) : energyData;
-
-  // Calculate max usage for dynamic top consumers scaling
-  const maxUsage = summary.topConsumers ? Math.max(...summary.topConsumers.map(c => Number(c.usage))) : 1;
+  const maxUsage = summary.topConsumers?.length ? Math.max(...summary.topConsumers.map((c) => c.usage)) : 1;
 
   return (
-    <div className="flex w-screen h-screen bg-gray-50 overflow-hidden">
-      
-      <DashboardSidebar/>
+    <div className="flex w-full bg-gray-50 overflow-hidden">
+      <DashboardSidebar />
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden p-4">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h1 className="text-2xl font-bold">Energy Dashboard</h1>
-            <p className="text-gray-500">Monitor and analyze your energy consumption in real-time</p>
-          </div>
-          <div className="flex flex-col items-end">
-            <button 
-              onClick={handleExport}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              Export Report
-            </button>
-          </div>
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden p-4 space-y-4">
+        <Header
+          title="Energy Dashboard"
+          subtitle="Monitor and analyze your energy consumption in real-time"
+        />
+
+        {/* Export Button */}
+        <div className="flex justify-end">
+          <button
+            onClick={handleExport}
+            className="bg-[#091053] hover:bg-[#1424B9] text-white px-6 py-2 rounded-lg font-medium"
+          >
+            Export Report
+          </button>
         </div>
 
         {/* Summary Cards */}
@@ -166,31 +141,24 @@ export default function EnergyDashboard() {
           </div>
         </div>
 
-        {/* Energy Consumption Trend */}
-        <div className="flex flex-col bg-white rounded-lg shadow p-4 mb-4 flex-1 min-h-0 w-full overflow-hidden">
+        {/* Energy Chart */}
+        <div className="flex flex-col bg-white rounded-lg shadow p-4 flex-1 min-h-[300px]">
           <div className="flex justify-between items-center mb-2">
             <h2 className="font-semibold">Energy Consumption Trend</h2>
             <div className="flex gap-2">
-              <button 
-                className={`px-4 py-1 rounded text-sm font-medium ${
-                  viewMode === "7d"
-                    ? "bg-blue-600 text-white" 
-                    : "bg-gray-100 text-black hover:bg-gray-200"
-                }`}
-                onClick={() => setViewMode("7d")}
-              >
-                7 Days
-              </button>
-              <button
-                className={`px-4 py-1 rounded text-sm font-medium ${
-                  viewMode === "30d"
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-100 text-black hover:bg-gray-200"
-                }`}
-                onClick={() => setViewMode("30d")}
-              >
-                30 Days
-              </button>   
+              {["7d", "30d"].map((mode) => (
+                <button
+                  key={mode}
+                  className={`px-4 py-1 rounded text-sm font-medium ${
+                    viewMode === mode
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-100 text-black hover:bg-gray-200"
+                  }`}
+                  onClick={() => setViewMode(mode)}
+                >
+                  {mode === "7d" ? "7 Days" : "30 Days"}
+                </button>
+              ))}
             </div>
           </div>
           {loading ? (
@@ -203,8 +171,8 @@ export default function EnergyDashboard() {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={displayedData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
                 <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-                <XAxis 
-                  dataKey="name" 
+                <XAxis
+                  dataKey="name"
                   tickFormatter={(value) => value.split(",")[0]}
                   tick={{ fontSize: 12 }}
                   interval={0}
@@ -212,22 +180,13 @@ export default function EnergyDashboard() {
                   textAnchor="end"
                   height={60}
                 />
-                <YAxis 
-                  domain={[0, 'dataMax + 20']}
-                  tick={{ fontSize: 12, fill: "#333" }}
-                  tickMargin={10}
-                />
-                <Tooltip
-                  contentStyle={{ fontSize: 14 }}
-                  labelStyle={{ fontSize: 14 }}
-                  itemStyle={{ fontSize: 14 }} 
-                />
+                <YAxis domain={[0, "dataMax + 20"]} tick={{ fontSize: 12 }} />
+                <Tooltip />
                 <Line type="monotone" dataKey="kWh" stroke="#3b82f6" strokeWidth={2} dot={{ r: 4 }} />
               </LineChart>
             </ResponsiveContainer>
           )}
         </div>
-
         {/* Bottom Section */}
         <div className="flex flex-1 gap-4 min-h-0 w-full overflow-hidden">
           {/* Top Energy Consumers */}
@@ -273,7 +232,7 @@ export default function EnergyDashboard() {
             ) : alerts.length === 0 ? (
               <div className="text-gray-400">No active alerts</div>
             ) : (
-              <div className="flex flex-col space-y-2 overflow-y-auto">
+              <div className="flex flex-col flex-1 space-y-2 overflow-hidden">
                 {alerts.map((alert, index) => (
                   <div
                     key={index}
@@ -291,3 +250,7 @@ export default function EnergyDashboard() {
     </div>
   );
 }
+
+
+
+       

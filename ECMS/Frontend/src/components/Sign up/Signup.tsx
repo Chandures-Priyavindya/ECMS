@@ -11,7 +11,6 @@ const Signup: React.FC = () => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [companyName, setCompanyName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -30,12 +29,11 @@ const Signup: React.FC = () => {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/auth/signup", {
+      const res = await axios.post("http://localhost:5000/api/signup", {
         firstName,
         lastName,
         email,
         phoneNumber,
-        companyName,
         password,
         termsAccepted,
       });
@@ -99,14 +97,6 @@ const Signup: React.FC = () => {
               placeholder="Phone Number"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
-              className="w-full px-4 py-2 border rounded-md"
-              required
-            />
-            <input
-              type="text"
-              placeholder="Company Name"
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
               className="w-full px-4 py-2 border rounded-md"
               required
             />
