@@ -7,6 +7,7 @@ import Signup from "./components/Sign up/Signup";
 import Alert from "./components/Alerts/Alert";
 import Clustering from "./components/Clustering/Clustering";
 import EnergyTracker from "./components/Energy Tracking/EnergyTracker";
+import Settings from "./components/Settings/Settings";
 import AddUser from "./components/User Management/Adduser";
 
 // PrivateRoute component to protect routes
@@ -96,6 +97,16 @@ function App() {
               <AddUser />
             </PrivateRoute>
           }
+          
+        />
+        <Route
+          path="/settings"
+          element={
+            <PrivateRoute>
+              <Settings />
+            </PrivateRoute>
+          }
+          
         />
 
         {/* Catch-all route for undefined pages */}

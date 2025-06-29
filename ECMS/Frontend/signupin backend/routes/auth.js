@@ -18,13 +18,7 @@ router.post('/signup', async (req, res) => {
     termsAccepted,
   } = req.body;
 
-  if (
-    !firstName ||
-    !lastName ||
-    !email ||
-    !phoneNumber ||
-    !password
-  ) {
+  if (!firstName || !lastName || !email || !phoneNumber || !password) {
     return res.status(400).json({ error: 'All fields are required.' });
   }
 
@@ -102,7 +96,6 @@ router.post('/signin', async (req, res) => {
         lastName: user.lastName,
         email: user.email,
         phoneNumber: user.phoneNumber,
-       
       },
     });
   } catch (error) {
@@ -111,7 +104,7 @@ router.post('/signin', async (req, res) => {
   }
 });
 
-// GET /user - fetch user info by verifying JWT token
+// GET /user - fetch user info
 router.get('/user', async (req, res) => {
   try {
     const authHeader = req.headers.authorization || '';
@@ -120,7 +113,6 @@ router.get('/user', async (req, res) => {
     }
 
     const token = authHeader.replace('Bearer ', '');
-
     const decoded = jwt.verify(token, JWT_SECRET);
 
     const db = await connectDB();
@@ -128,17 +120,61 @@ router.get('/user', async (req, res) => {
 
     const user = await users.findOne(
       { _id: new ObjectId(decoded.userId) },
-      { projection: { firstName: 1 } }
+      { projection: { firstName: 1, lastName: 1, email: 1, phoneNumber: 1 } }
     );
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    return res.json({ firstName: user.firstName });
+    console.log('Returning user from DB:', user);
+    return res.status(200).json(user);
   } catch (error) {
     console.error('Error fetching user:', error);
     return res.status(401).json({ error: 'Invalid or expired token' });
+  }
+});
+
+// update user info
+router.put('/user', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization || '';
+    if (!authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Unauthorized: Missing token' });
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const decoded = jwt.verify(token, JWT_SECRET);
+
+    const db = await connectDB();
+    const users = db.collection('users');
+
+    const { firstName, lastName, phoneNumber } = req.body;
+
+    const result = await users.updateOne(
+      { _id: new ObjectId(decoded.userId) },
+      {
+        $set: {
+          firstName,
+          lastName,
+          phoneNumber,
+        },
+      }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(400).json({ error: 'User update failed.' });
+    }
+
+    const updatedUser = await users.findOne(
+      { _id: new ObjectId(decoded.userId) },
+      { projection: { firstName: 1, lastName: 1, email: 1, phoneNumber: 1 } }
+    );
+
+    return res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error('Error updating user:', error);
+    return res.status(500).json({ error: 'Error updating user.' });
   }
 });
 
