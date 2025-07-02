@@ -14,26 +14,6 @@ import {
 import { Search, Share } from 'lucide-react'
 import Select from 'react-select'
 
-<<<<<<< HEAD:ECMS/Frontend/src/components/Energy Tracking/EnergyTracker.tsx
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
-import { Button } from "../ui/button"
-import { Input } from "../ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts"
-import MainLayout from "../Layouts/MainLayout"
-import Header from "../Layouts/Header"
-
-
-const energyData = [
-  { day: "Mon", consumption: 450 },
-  { day: "Tue", consumption: 520 },
-  { day: "Wed", consumption: 480 },
-  { day: "Thu", consumption: 390 },
-  { day: "Fri", consumption: 560 },
-  { day: "Sat", consumption: 420 },
-  { day: "Sun", consumption: 380 },
-=======
 const data = [
   { day: 'Mon', value: 20 },
   { day: 'Tue', value: 30 },
@@ -42,7 +22,6 @@ const data = [
   { day: 'Fri', value: 35 },
   { day: 'Sat', value: 28 },
   { day: 'Sun', value: 32 },
->>>>>>> 5a2aed2b93cf178d8e696ab5a9496d9a177f780f:ECMS/Frontend/src/components/Energy Tracking/pages/EnergyTracker.tsx
 ]
 
 const barData = [
@@ -53,107 +32,6 @@ const barData = [
   { name: 'Row #6', value: 50 },
 ]
 
-<<<<<<< HEAD:ECMS/Frontend/src/components/Energy Tracking/EnergyTracker.tsx
-export default function EnergyTracker() {
-  const [chartType, setChartType] = useState("bar")
-  const [severityFilter, setSeverityFilter] = useState("all")
-  const [machineFilter, setMachineFilter] = useState("all")
-  const [searchTerm, setSearchTerm] = useState("")
-  
-  return (
-  <MainLayout>
-    <div className="space-y-6">
-        <Header
-          title = "Energy Tracking"
-          subtitle = "Monitor and analyze energy consumption data"
-      />
-      <div className="flex justify-end">
-        <Button className="bg-[#091053] hover:bg-[#1424B9] text-white px-6 py-2 rounded-lg font-medium">Share</Button>
-      </div>
-<Card className="bg-white shadow-sm p-6">
-  <CardHeader className="pb-4">
-    <CardTitle className="text-lg font-semibold text-gray-900">Filters</CardTitle>
-  </CardHeader>
-  <CardContent>
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {/* Search Input */}
-      <div className="flex flex-col space-y-2">
-        <label className="text-sm font-semibold text-gray-700">Search</label>
-        <Input
-          placeholder="Search Machines..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full bg-[rgba(217,217,217,0.29)] shadow-md rounded-md h-14 px-4 border border-transparent focus:border-gray-300 focus:ring-0"
-          style={{ boxShadow: "0px 4px 4px rgba(0,0,0,0.25)" }}
-        />
-      </div>
-
-      {/* Chart Type Buttons with Title */}
-      <div className="flex flex-col space-y-2">
-        <label className="text-sm font-semibold text-gray-700">Chart Type</label>
-        <div className="flex bg-white shadow-md rounded-lg p-1 h-12 space-x-2" style={{ boxShadow: "0px 4px 4px rgba(0,0,0,0.25)" }}>
-          <Button
-            variant={chartType === "bar" ? "default" : "ghost"}
-            onClick={() => setChartType("bar")}
-            className={`flex-1 text-sm font-medium rounded-md h-10 ${
-              chartType === "bar"
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-600 hover:bg-indigo-100 hover:text-indigo-700"
-            }`}
-          >
-            Bar Chart
-          </Button>
-          <Button
-            variant={chartType === "line" ? "default" : "ghost"}
-            onClick={() => setChartType("line")}
-            className={`flex-1 text-sm font-medium rounded-md h-10 ${
-              chartType === "line"
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-600 hover:bg-indigo-100 hover:text-indigo-700"
-            }`}
-          >
-            Line Chart
-          </Button>
-        </div>
-      </div>
-
-      {/* Severity Filter with Title */}
-      <div className="flex flex-col space-y-2">
-        <label className="text-sm font-semibold text-gray-700">Severity</label>
-        <Select value={severityFilter} onValueChange={setSeverityFilter}>
-          <SelectTrigger
-            className="bg-white border border-gray-300 rounded-md h-12 shadow-md"
-            style={{ boxShadow: "0px 4px 4px rgba(0,0,0,0.25)" }}
-          >
-            <SelectValue placeholder="All Severities" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Severities</SelectItem>
-            <SelectItem value="high">High</SelectItem>
-            <SelectItem value="medium">Medium</SelectItem>
-            <SelectItem value="low">Low</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Machine Filter with Title */}
-      <div className="flex flex-col space-y-2">
-        <label className="text-sm font-semibold text-gray-700">Machine</label>
-        <Select value={machineFilter} onValueChange={setMachineFilter}>
-          <SelectTrigger
-            className="bg-white border border-gray-300 rounded-md h-12 shadow-md"
-            style={{ boxShadow: "0px 4px 4px rgba(0,0,0,0.25)" }}
-          >
-            <SelectValue placeholder="All Machines" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Machines</SelectItem>
-            <SelectItem value="hvac">HVAC System</SelectItem>
-            <SelectItem value="assembly">Assembly Line</SelectItem>
-            <SelectItem value="compressor">Compressor</SelectItem>
-          </SelectContent>
-        </Select>
-=======
 type InsightCardProps = {
   title: string
   value: string
@@ -293,7 +171,6 @@ export const EnergyTracker = ({ dataId }: { dataId?: string }) => {
             />
           </div>
         </div>
->>>>>>> 5a2aed2b93cf178d8e696ab5a9496d9a177f780f:ECMS/Frontend/src/components/Energy Tracking/pages/EnergyTracker.tsx
       </div>
     </div>
   )

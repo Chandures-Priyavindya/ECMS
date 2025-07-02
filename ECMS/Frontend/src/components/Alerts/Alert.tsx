@@ -1,13 +1,6 @@
-<<<<<<< HEAD
-
-import React, { useState } from 'react';
-import DashboardSidebar from '../Layouts/Dashboardsidebar';
-import Header from "../Layouts/Header";
-=======
 import React, { useEffect, useState } from 'react';
 import DashboardSidebar from '../Layouts/Dashboardsidebar';
 import axios from 'axios';
->>>>>>> 5a2aed2b93cf178d8e696ab5a9496d9a177f780f
 
 interface AlertItem {
   severity: 'High' | 'Medium' | 'Low';
@@ -27,11 +20,8 @@ const Alert: React.FC = () => {
   const [alertsData, setAlertsData] = useState<AlertItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSeverity, setSelectedSeverity] = useState('All Severities');
-  const [selectedMachine, setSelectedMachine] = useState('All Machines');
+  const [selectedMachine, setSelectedMachine] = useState('All Machine');
 
-<<<<<<< HEAD
-  const machinesList = Array.from(new Set(alertsData.map(item => item.machine))).sort();
-=======
   useEffect(() => {
     axios.get('http://localhost:5000/api/alerts')
       .then((res) => setAlertsData(res.data))
@@ -39,41 +29,25 @@ const Alert: React.FC = () => {
   }, []);
 
   const machinesList = Array.from(new Set(alertsData.map(item => item.machine)));
->>>>>>> 5a2aed2b93cf178d8e696ab5a9496d9a177f780f
 
   const filteredData = alertsData.filter(item => {
     const matchesSearch = item.machine.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesSeverity = selectedSeverity === 'All Severities' || item.severity === selectedSeverity;
-    const matchesMachine = selectedMachine === 'All Machines' || item.machine === selectedMachine;
+    const matchesMachine = selectedMachine === 'All Machine' || item.machine === selectedMachine;
     return matchesSearch && matchesSeverity && matchesMachine;
   });
 
   return (
-    <div className="flex w-full bg-gray-50 overflow-hidden">
+    <div className="flex">
       <DashboardSidebar />
-<<<<<<< HEAD
-
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden p-4 space-y-4">
-        <Header
-          title="Alerts"
-          subtitle="Filter, review, and respond to machine alerts efficiently"
-        />
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div>
-            <label className="block text-gray-700 font-semibold mb-1">Search Machine</label>
-=======
       <div className="flex-1 p-4 sm:p-8 bg-gray-100 min-h-screen">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-
           <h1 className="text-2xl font-semibold text-gray-800">Alerts</h1>
-
         </div>
 
         <div className="flex flex-wrap gap-4 mb-6 items-end">
           <div className="flex flex-col">
             <label className="text-gray-700 font-semibold mb-1">Search Machine</label>
->>>>>>> 5a2aed2b93cf178d8e696ab5a9496d9a177f780f
             <input
               type="text"
               placeholder="Enter machine name..."
@@ -104,9 +78,9 @@ const Alert: React.FC = () => {
               onChange={(e) => setSelectedMachine(e.target.value)}
               className="w-52 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option>All Machines</option>
-              {machinesList.map((machine) => (
-                <option key={machine}>{machine}</option>
+              <option>All Machine</option>
+              {machinesList.map((machine, idx) => (
+                <option key={idx}>{machine}</option>
               ))}
             </select>
           </div>

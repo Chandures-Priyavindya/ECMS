@@ -10,40 +10,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import DashboardSidebar from "../Layouts/Dashboardsidebar";
-import Header from "../Layouts/Header";
 
-<<<<<<< HEAD
-const mockEnergyData = [
-  { name: "Mon, Jan 1", kWh: 120 },
-  { name: "Tue, Jan 2", kWh: 135 },
-  { name: "Wed, Jan 3", kWh: 125 },
-  { name: "Thu, Jan 4", kWh: 148 },
-  { name: "Fri, Jan 5", kWh: 0 },
-  { name: "Sat, Jan 6", kWh: 110 },
-  { name: "Sun, Jan 7", kWh: 95 },
-];
-
-const mockAlerts = [
-  { message: "High energy consumption detected in Building A" },
-  { message: "Machine M-001 requires maintenance" },
-  { message: "Power factor low in Zone 3" },
-];
-
-const mockSummary = {
-  totalConsumption: 2450,
-  totalConsumptionChange: "+5.2% from last month",
-  highestConsumer: "Building A",
-  highestConsumerChange: "+12% this week",
-  energyEfficiency: 87,
-  energyEfficiencyChange: "+2.3% improved",
-  topConsumers: [
-    { name: "Building A", usage: 450 },
-    { name: "Building B", usage: 380 },
-    { name: "Building C", usage: 320 },
-    { name: "Building D", usage: 280 },
-    { name: "Building E", usage: 220 },
-  ],
-=======
 type EnergyDataItem = { name: string; kWh: number };
 
 type AlertItem = {
@@ -52,7 +19,6 @@ type AlertItem = {
   machine: string;
   status: string;
   time: string;
->>>>>>> 5a2aed2b93cf178d8e696ab5a9496d9a177f780f
 };
 
 type TopConsumer = {
@@ -73,10 +39,6 @@ type Summary = {
 
 export default function EnergyDashboard() {
   const [energyData, setEnergyData] = useState<EnergyDataItem[]>([]);
-<<<<<<< HEAD
-  const [summary, setSummary] = useState<typeof mockSummary>(mockSummary);
-  const [alerts, setAlerts] = useState<{ message: string }[]>([]);
-=======
   const [summary, setSummary] = useState<Summary>({
     totalConsumption: 0,
     totalConsumptionChange: "",
@@ -88,7 +50,6 @@ export default function EnergyDashboard() {
     activeAlertCount: 0,
   });
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
->>>>>>> 5a2aed2b93cf178d8e696ab5a9496d9a177f780f
   const [loading, setLoading] = useState(true);
   const [, setError] = useState<null | string>(null);
   const [viewMode, setViewMode] = useState("7d");
@@ -96,14 +57,6 @@ export default function EnergyDashboard() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-<<<<<<< HEAD
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setEnergyData(mockEnergyData);
-      setSummary(mockSummary);
-      setAlerts(mockAlerts);
-    } catch (err) {
-      setError("Failed to fetch dashboard data");
-=======
 
       const [trendRes, topConsumersRes, alertsRes] = await Promise.all([
         axios.get(`http://localhost:5000/api/energy/trend?range=${viewMode}`),
@@ -137,7 +90,6 @@ export default function EnergyDashboard() {
     } catch (err) {
       console.error("Dashboard fetch error", err);
       setError("Failed to load data");
->>>>>>> 5a2aed2b93cf178d8e696ab5a9496d9a177f780f
     } finally {
       setLoading(false);
     }
@@ -160,26 +112,6 @@ export default function EnergyDashboard() {
     document.body.removeChild(link);
   };
 
-<<<<<<< HEAD
-  const displayedData = viewMode === "7d" ? energyData.slice(-7) : energyData;
-  const maxUsage = summary.topConsumers?.length ? Math.max(...summary.topConsumers.map((c) => c.usage)) : 1;
-
-  return (
-    <div className="flex w-full bg-gray-50 overflow-hidden">
-      <DashboardSidebar />
-
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden p-4 space-y-4">
-        <Header
-          title="Energy Dashboard"
-          subtitle="Monitor and analyze your energy consumption in real-time"
-        />
-
-        {/* Export Button */}
-        <div className="flex justify-end">
-          <button
-            onClick={handleExport}
-            className="bg-[#091053] hover:bg-[#1424B9] text-white px-6 py-2 rounded-lg font-medium"
-=======
   const maxUsage =
     summary.topConsumers.length > 0
       ? Math.max(...summary.topConsumers.map((c) => c.usage))
@@ -198,7 +130,6 @@ export default function EnergyDashboard() {
           <button
             onClick={handleExport}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
->>>>>>> 5a2aed2b93cf178d8e696ab5a9496d9a177f780f
           >
             Export Report
           </button>
@@ -211,26 +142,6 @@ export default function EnergyDashboard() {
           <SummaryCard title="Active Alerts" value={`${summary.activeAlertCount}`} color="text-red-500" />
         </div>
 
-<<<<<<< HEAD
-        {/* Energy Chart */}
-        <div className="flex flex-col bg-white rounded-lg shadow p-4 flex-1 min-h-[300px]">
-          <div className="flex justify-between items-center mb-2">
-            <h2 className="font-semibold">Energy Consumption Trend</h2>
-            <div className="flex gap-2">
-              {["7d", "30d"].map((mode) => (
-                <button
-                  key={mode}
-                  className={`px-4 py-1 rounded text-sm font-medium ${
-                    viewMode === mode
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 text-black hover:bg-gray-200"
-                  }`}
-                  onClick={() => setViewMode(mode)}
-                >
-                  {mode === "7d" ? "7 Days" : "30 Days"}
-                </button>
-              ))}
-=======
         <div className="bg-white rounded-lg shadow p-4 mb-4 flex-1 min-h-0">
           <div className="flex justify-between mb-2">
             <h2 className="font-semibold">Energy Consumption Trend</h2>
@@ -247,7 +158,6 @@ export default function EnergyDashboard() {
               >
                 30 Days
               </button>
->>>>>>> 5a2aed2b93cf178d8e696ab5a9496d9a177f780f
             </div>
           </div>
           {loading ? (
@@ -256,37 +166,17 @@ export default function EnergyDashboard() {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={energyData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
                 <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-<<<<<<< HEAD
-                <XAxis
-                  dataKey="name"
-                  tickFormatter={(value) => value.split(",")[0]}
-                  tick={{ fontSize: 12 }}
-                  interval={0}
-                  angle={-45}
-                  textAnchor="end"
-                  height={60}
-                />
-                <YAxis domain={[0, "dataMax + 20"]} tick={{ fontSize: 12 }} />
-=======
                 <XAxis dataKey="name" />
                 <YAxis />
->>>>>>> 5a2aed2b93cf178d8e696ab5a9496d9a177f780f
                 <Tooltip />
                 <Line type="monotone" dataKey="kWh" stroke="#3b82f6" strokeWidth={2} dot={{ r: 4 }} />
               </LineChart>
             </ResponsiveContainer>
           )}
         </div>
-<<<<<<< HEAD
-        {/* Bottom Section */}
-        <div className="flex flex-1 gap-4 min-h-0 w-full overflow-hidden">
-          {/* Top Energy Consumers */}
-          <div className="flex flex-col flex-1 bg-white rounded-lg shadow p-4 min-h-0 overflow-hidden">
-=======
 
         <div className="flex gap-4 w-full min-h-0 overflow-hidden">
           <div className="flex-1 bg-white rounded-lg shadow p-4">
->>>>>>> 5a2aed2b93cf178d8e696ab5a9496d9a177f780f
             <h2 className="font-semibold mb-2">Top Energy Consumers</h2>
             {loading ? (
               <LoadingSpinner />
@@ -317,18 +207,6 @@ export default function EnergyDashboard() {
             ) : alerts.length === 0 ? (
               <p className="text-gray-400">No active alerts</p>
             ) : (
-<<<<<<< HEAD
-              <div className="flex flex-col flex-1 space-y-2 overflow-hidden">
-                {alerts.map((alert, index) => (
-                  <div
-                    key={index}
-                    className="bg-red-100 text-red-600 p-3 rounded-lg flex items-center space-x-2"
-                  >
-                    <span>🔔</span> 
-                    <span className="text-sm">{alert.message}</span>
-                  </div>
-                ))}
-=======
               <div className="flex flex-col space-y-2 overflow-y-auto max-h-60">
                 {alerts.map((alert, index) => {
                   let badgeColor = "bg-yellow-100 text-yellow-700";
@@ -348,7 +226,6 @@ export default function EnergyDashboard() {
                     </div>
                   );
                 })}
->>>>>>> 5a2aed2b93cf178d8e696ab5a9496d9a177f780f
               </div>
             )}
           </div>
@@ -358,11 +235,6 @@ export default function EnergyDashboard() {
   );
 }
 
-<<<<<<< HEAD
-
-
-       
-=======
 function SummaryCard({
   title,
   value,
@@ -390,4 +262,3 @@ function LoadingSpinner() {
     </div>
   );
 }
->>>>>>> 5a2aed2b93cf178d8e696ab5a9496d9a177f780f
