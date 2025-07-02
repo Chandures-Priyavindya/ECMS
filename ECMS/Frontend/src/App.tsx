@@ -6,8 +6,16 @@ import Signin from "./components/Sign In/Signin";
 import Signup from "./components/Sign up/Signup";
 import Alert from "./components/Alerts/Alert";
 import Clustering from "./components/Clustering/Clustering";
+<<<<<<< HEAD
 import EnergyTracker from "./components/Energy Tracking/EnergyTracker";
 import Settings from "./components/Settings/Settings";
+=======
+
+import { EnergyTracker } from "./components/Energy Tracking/pages/EnergyTracker";
+
+
+
+>>>>>>> 5a2aed2b93cf178d8e696ab5a9496d9a177f780f
 import AddUser from "./components/User Management/Adduser";
 
 // PrivateRoute component to protect routes
