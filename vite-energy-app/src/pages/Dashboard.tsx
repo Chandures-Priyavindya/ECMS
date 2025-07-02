@@ -22,12 +22,36 @@ import { Card, CardContent } from "./ui/card.jsx";
 import { Button } from "./ui/button.jsx";
 import axios from "axios";
 
+type EnergyDataItem = {
+  name: string;
+  kWh: number;
+};
+
+type TopConsumer = {
+  name: string;
+  usage: number | string;
+};
+
+type Summary = {
+  totalConsumption?: number;
+  totalConsumptionChange?: string;
+  highestConsumer?: string;
+  highestConsumerChange?: string;
+  energyEfficiency?: number;
+  energyEfficiencyChange?: string;
+  topConsumers?: TopConsumer[];
+};
+
+type Alert = {
+  message: string;
+};
+
 export default function EnergyDashboard() {
-  const [energyData, setEnergyData] = useState([]);
-  const [summary, setSummary] = useState({});
-  const [alerts, setAlerts] = useState([]);
+  const [energyData, setEnergyData] = useState<EnergyDataItem[]>([]);
+  const [summary, setSummary] = useState<Summary>({});
+  const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState("7d");
 
   const fetchDashboardData = async (days = 7) => {
@@ -222,7 +246,7 @@ export default function EnergyDashboard() {
               <div className="text-gray-500 flex-1 flex justify-center items-center">Loading...</div>
             ) : (
               <div className="flex justify-around items-end flex-1" style={{ height: 180 }}>
-                {summary.topConsumers.map((consumer, index) => {
+                {summary.topConsumers && summary.topConsumers.map((consumer, index) => {
                   const usage = Number(consumer.usage) || 0;
                   const max = maxUsage || 1;
                   const maxBarHeight = 150;
