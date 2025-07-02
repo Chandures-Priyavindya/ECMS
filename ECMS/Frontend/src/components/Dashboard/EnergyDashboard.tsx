@@ -34,6 +34,7 @@ type Summary = {
   energyEfficiency: number;
   energyEfficiencyChange: string;
   topConsumers: TopConsumer[];
+  activeAlertCount: number;
 };
 
 export default function EnergyDashboard() {
@@ -46,6 +47,7 @@ export default function EnergyDashboard() {
     energyEfficiency: 0,
     energyEfficiencyChange: "",
     topConsumers: [],
+    activeAlertCount: 0,
   });
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,38 +58,35 @@ export default function EnergyDashboard() {
     try {
       setLoading(true);
 
-      // Mock energy trend (you can fetch real later if needed)
-      setEnergyData([
-        { name: "Mon", kWh: 120 },
-        { name: "Tue", kWh: 135 },
-        { name: "Wed", kWh: 125 },
-        { name: "Thu", kWh: 148 },
-        { name: "Fri", kWh: 100 },
-        { name: "Sat", kWh: 110 },
-        { name: "Sun", kWh: 95 },
-      ]);
-
-      // Fetch real top consumers and alerts
-      const [topConsumersRes, alertsRes] = await Promise.all([
+      const [trendRes, topConsumersRes, alertsRes] = await Promise.all([
+        axios.get(`http://localhost:5000/api/energy/trend?range=${viewMode}`),
         axios.get("http://localhost:5000/api/energy/top-consumers"),
         axios.get("http://localhost:5000/api/alerts/latest"),
       ]);
 
-      const topConsumers = topConsumersRes.data;
-      const highestConsumer = topConsumers[0]?.name || "";
+      const trendData: EnergyDataItem[] = trendRes.data;
+      const topConsumers: TopConsumer[] = topConsumersRes.data || [];
+      const latestAlerts: AlertItem[] = alertsRes.data?.alerts || [];
+      const activeAlertCount = alertsRes.data?.activeCount || 0;
+
+      const totalUsage = topConsumers.reduce((acc, curr) => acc + (curr.usage || 0), 0);
+      const highestConsumer = topConsumers.length > 0 ? topConsumers[0].name : "N/A";
+
+      setEnergyData(trendData);
 
       setSummary((prev) => ({
         ...prev,
-        totalConsumption: 2450,
+        totalConsumption: totalUsage,
         totalConsumptionChange: "+5.2% from last month",
         highestConsumer: highestConsumer,
         highestConsumerChange: "+12% this week",
         energyEfficiency: 87,
         energyEfficiencyChange: "+2.3% improved",
         topConsumers: topConsumers,
+        activeAlertCount: activeAlertCount,
       }));
 
-      setAlerts(alertsRes.data);
+      setAlerts(latestAlerts);
     } catch (err) {
       console.error("Dashboard fetch error", err);
       setError("Failed to load data");
@@ -140,7 +139,7 @@ export default function EnergyDashboard() {
           <SummaryCard title="Total Energy Consumption (MTD)" value={`${summary.totalConsumption} kWh`} change={summary.totalConsumptionChange} color="text-blue-600" />
           <SummaryCard title="Highest Consumer" value={summary.highestConsumer} change={summary.highestConsumerChange} color="text-red-500" />
           <SummaryCard title="Energy Efficiency" value={`${summary.energyEfficiency}%`} change={summary.energyEfficiencyChange} color="text-green-500" />
-          <SummaryCard title="Active Alerts" value={`${alerts.length}`} color="text-red-500" />
+          <SummaryCard title="Active Alerts" value={`${summary.activeAlertCount}`} color="text-red-500" />
         </div>
 
         <div className="bg-white rounded-lg shadow p-4 mb-4 flex-1 min-h-0">

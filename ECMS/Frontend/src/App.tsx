@@ -6,7 +6,7 @@ import Signin from "./components/Sign In/Signin";
 import Signup from "./components/Sign up/Signup";
 import Alert from "./components/Alerts/Alert";
 import Clustering from "./components/Clustering/Clustering";
-import EnergyTracker from "./components/Energy Tracking/pages/EnergyTracker";
+import { EnergyTracker } from "./components/Energy Tracking/pages/EnergyTracker";
 import AddUser from "./components/User Management/Adduser";
 
 function App() {

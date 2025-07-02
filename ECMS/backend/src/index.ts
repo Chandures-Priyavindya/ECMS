@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import userRoutes from './routes/userRoutes';
 import AlertModel from './models/Alert';
 import EnergyConsumer from './models/EnergyConsumer';
+import EnergyCollection from './models/EnergyCollection';
 
 dotenv.config();
 const app = express();
@@ -39,16 +40,19 @@ app.post('/api/alerts', async (req, res) => {
 
 app.get('/api/alerts/latest', async (req, res) => {
   try {
-    const alerts = await AlertModel.find()
-      .sort({ _id: -1 })       // newest first
-      .limit(3);               // only last 3
+    const allAlerts = await AlertModel.find(); // all alerts
+    const latestAlerts = [...allAlerts].sort((a, b) => b._id.getTimestamp().getTime() - a._id.getTimestamp().getTime()).slice(0, 3);
 
-    res.json(alerts);
+    res.json({
+      alerts: latestAlerts,
+      activeCount: allAlerts.length,
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Failed to fetch latest alerts' });
+    res.status(500).json({ error: 'Failed to fetch alerts' });
   }
 });
+
 
 // GET top 5 energy consumers sorted by usage descending
 app.get('/api/energy/top-consumers', async (req, res) => {
@@ -60,3 +64,47 @@ app.get('/api/energy/top-consumers', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch top consumers' });
   }
 });
+
+// GET /api/energy/trend?range=7d or 30d
+app.get('/api/energy/trend', async (req, res) => {
+  const { range } = req.query; // "7d" or "30d"
+  const days = range === '30d' ? 30 : 7;
+  const endDate = new Date();
+  const startDate = new Date();
+  startDate.setDate(endDate.getDate() - days + 1); // include today
+
+  try {
+    const trendData = await EnergyCollection.aggregate([
+      {
+        $match: {
+          date: {
+            $gte: new Date(startDate.toDateString()),
+            $lte: new Date(endDate.toDateString())
+          }
+        }
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+          kWh: { $sum: "$usage" }
+        }
+      },
+      {
+        $sort: { _id: 1 }
+      },
+      {
+        $project: {
+          name: "$_id",
+          kWh: 1,
+          _id: 0
+        }
+      }
+    ]);
+
+    res.json(trendData);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch trend data" });
+  }
+});
+
