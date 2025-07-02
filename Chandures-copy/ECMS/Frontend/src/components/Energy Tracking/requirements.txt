@@ -1,0 +1,5 @@
+npm install @radix-ui/react-slot
+npm install class-variance-authority
+npm install @radix-ui/react-dropdown-menu
+npm install @radix-ui/react-select
+npm install tailwind-merge
