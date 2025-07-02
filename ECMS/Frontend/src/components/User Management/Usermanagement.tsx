@@ -1,34 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardSidebar from '../Layouts/Dashboardsidebar';
 import { Pencil, Trash } from 'lucide-react';
 
-
 interface User {
-  name: string;
+  _id: string;
+  fullName: string;
   email: string;
   role: string;
-  roleColor: string;
   department: string;
-  lastActive: string;
+  createdAt?: string; // optional if you store it
 }
 
-const usersData: User[] = [
-  { name: 'Jagath Bumara', email: 'jagath@gmail.com', role: 'Administrator', roleColor: 'text-blue-600', department: 'Operations', lastActive: '2 hours ago' },
-  { name: 'Numara Vimalawira', email: 'numara@gmail.com', role: 'Maintenance', roleColor: 'text-blue-400', department: 'Operations', lastActive: '5 hours ago' },
-  { name: 'Cansi Nirmala', email: 'cansi@gmail.com', role: 'Viewer', roleColor: 'text-red-400', department: 'Facilities', lastActive: '2 hours ago' },
-  { name: 'Vada Kimasha', email: 'vada@gmail.com', role: 'Technician', roleColor: 'text-green-600', department: 'Maintenance', lastActive: '6 hours ago' },
-  { name: 'Ziamala Birmarla', email: 'ziamala@gmail.com', role: 'Energy Manager', roleColor: 'text-green-500', department: 'Analytics', lastActive: '2 hours ago' },
-  { name: 'Sanga Numari', email: 'sanga@gmail.com', role: 'Analyst', roleColor: 'text-green-400', department: 'Management', lastActive: '3 hours ago' },
-  { name: 'Saduni Niwansa', email: 'saduni@gmail.com', role: 'Viewer', roleColor: 'text-red-400', department: 'Operations', lastActive: '1 hour ago' },
-];
-
 const UserManagement: React.FC = () => {
+  const [users, setUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  const filteredUsers = usersData.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/users');
+        const data = await res.json();
+        setUsers(data);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  const filteredUsers = users.filter(user =>
+    user.fullName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -64,18 +68,18 @@ const UserManagement: React.FC = () => {
                 <th className="px-4 py-3">Email</th>
                 <th className="px-4 py-3">Role</th>
                 <th className="px-4 py-3">Department</th>
-                <th className="px-4 py-3">Last Active</th>
+                <th className="px-4 py-3">Created</th>
                 <th className="px-4 py-3">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map((user, index) => (
-                <tr key={index} className="border-t hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-3 font-medium text-gray-900">{user.name}</td>
+              {filteredUsers.map((user) => (
+                <tr key={user._id} className="border-t hover:bg-gray-50 transition-colors">
+                  <td className="px-4 py-3 font-medium text-gray-900">{user.fullName}</td>
                   <td className="px-4 py-3 text-gray-600">{user.email}</td>
-                  <td className={`px-4 py-3 font-semibold ${user.roleColor}`}>{user.role}</td>
+                  <td className="px-4 py-3">{user.role}</td>
                   <td className="px-4 py-3">{user.department}</td>
-                  <td className="px-4 py-3">{user.lastActive}</td>
+                  <td className="px-4 py-3">{user.createdAt?.slice(0, 10) || '-'}</td>
                   <td className="px-4 py-3 flex space-x-3">
                     <button className="text-green-600 hover:text-green-800">
                       <Pencil size={18} />
