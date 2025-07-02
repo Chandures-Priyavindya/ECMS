@@ -82,7 +82,6 @@ const DashboardSidebar: React.FC = () => {
               </Link>
             </li>
 
-
             <li className="flex items-center gap-3">
               <RiAlertLine size={18} />
               <Link
@@ -114,20 +113,11 @@ const DashboardSidebar: React.FC = () => {
 
           <hr className="my-6 border-blue-900" />
 
+          <p className="text-sm text-gray-300 mb-3">Settings</p>
           <ul className="space-y-4">
             <li className="flex items-center gap-3">
               <BsFillGearFill size={18} />
-              <Link
-                to="/settings"
-                className={`${
-                  currentPath === "/settings"
-                    ? "text-blue-300 font-semibold"
-                    : "text-gray-300 hover:text-blue-300"
-                }`}
-              >
-                Settings
-              </Link>
-              
+              <span className="text-gray-300">Settings</span>
             </li>
           </ul>
         </div>
@@ -137,4 +127,3 @@ const DashboardSidebar: React.FC = () => {
 };
 
 export default DashboardSidebar;
-
