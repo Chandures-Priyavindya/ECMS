@@ -42,7 +42,9 @@ const Alert: React.FC = () => {
       <DashboardSidebar />
       <div className="flex-1 p-4 sm:p-8 bg-gray-100 min-h-screen">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+
           <h1 className="text-2xl font-semibold text-gray-800">Alerts</h1>
+
         </div>
 
         <div className="flex flex-wrap gap-4 mb-6 items-end">
