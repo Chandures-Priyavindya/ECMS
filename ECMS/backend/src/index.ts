@@ -108,3 +108,35 @@ app.get('/api/energy/trend', async (req, res) => {
   }
 });
 
+// Define the Machine schema
+const machineSchema = new mongoose.Schema({
+  machineName: String,
+  status: String,
+  location: String,
+});
+
+// Create Machine model
+const Machine = mongoose.model('Machine', machineSchema);
+
+// POST route to insert a new machine
+app.post('/api/machines', async (req, res) => {
+  const { machineName, status, location } = req.body;
+  try {
+    const newMachine = new Machine({ machineName, status, location });
+    await newMachine.save();
+    res.status(200).json({ message: 'Machine inserted successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Failed to insert machine' });
+  }
+});
+// GET route to fetch all machines
+app.get('/api/machines', async (req, res) => {
+  try {
+    const machines = await Machine.find();  // Fetch all machines from the database
+    res.status(200).json(machines); // Send the machines as a response
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Failed to fetch machines' });
+  }
+});
