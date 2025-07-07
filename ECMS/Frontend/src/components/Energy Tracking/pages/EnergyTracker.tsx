@@ -1,59 +1,94 @@
-import { useState } from 'react'
-import DashboardSidebar from '../../Layouts/Dashboardsidebar'
-import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts'
-import { Search, Share } from 'lucide-react'
-import Select from 'react-select'
+import { useState, useEffect } from 'react';
+import DashboardSidebar from '../../Layouts/Dashboardsidebar';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Search, Share } from 'lucide-react';
+import Select from 'react-select';
+import axios from 'axios';
 
-const data = [
-  { day: 'Mon', value: 20 },
-  { day: 'Tue', value: 30 },
-  { day: 'Wed', value: 25 },
-  { day: 'Thu', value: 40 },
-  { day: 'Fri', value: 35 },
-  { day: 'Sat', value: 28 },
-  { day: 'Sun', value: 32 },
-]
-
-const barData = [
-  { name: 'Row #2', value: 95 },
-  { name: 'Row #3', value: 85 },
-  { name: 'Row #4', value: 78 },
-  { name: 'Row #5', value: 65 },
-  { name: 'Row #6', value: 50 },
-]
-
-type InsightCardProps = {
-  title: string
-  value: string
-  subtitle: string
-  color?: string
+// Define the interface for machine data fetched from MongoDB
+interface Machine {
+  machineName: string;
+  status: string;
+  location: string;
+  kWh: number;
 }
 
-const InsightCard = ({ title, value, subtitle, color = 'text-blue-500' }: InsightCardProps) => (
-  <div className="bg-white rounded-lg p-4 shadow-sm">
-    <p className="text-gray-600 text-sm">{title}</p>
-    <p className={`text-2xl font-semibold ${color} mt-1`}>{value}</p>
-    <p className="text-gray-400 text-xs mt-1">{subtitle}</p>
-  </div>
-)
+const EnergyTracker = ({ dataId }: { dataId?: string }) => {
+  const [selectedMachine, setSelectedMachine] = useState<string | null>('All Machines');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [machineData, setMachineData] = useState<Machine[]>([]);
 
-export const EnergyTracker = ({ dataId }: { dataId?: string }) => {
-  const [chartType, setChartType] = useState<'line' | 'bar'>('line')
+  // State to store summary values from MongoDB
+  const [totalConsumption, setTotalConsumption] = useState<number>(0);
+  const [activeAlerts, setActiveAlerts] = useState<number>(0);
+  const [highestConsumer, setHighestConsumer] = useState<string>(''); 
+  const [highestConsumerKWh, setHighestConsumerKWh] = useState<number>(0); 
+
+  // Fetch data from the backend for machines and energy summary
+  useEffect(() => {
+    // Fetch machine data
+    axios
+      .get('/api/machines')
+      .then((response) => {
+        setMachineData(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching machine data: ', error);
+      });
+
+    // Fetch energy summary (Total Consumption and Active Alerts)
+    axios
+      .get('/api/energy-summary')
+      .then((response) => {
+        setTotalConsumption(response.data.totalConsumption); 
+        setActiveAlerts(response.data.activeAlerts);
+      })
+      .catch((error) => {
+        console.error('Error fetching energy summary: ', error);
+      });
+  }, []);
+
+  // Function to handle machine selection
+  const handleMachineSelect = (selectedOption: any) => { 
+    setSelectedMachine(selectedOption ? selectedOption.value : 'All Machines');
+  };
+
+  // Filter data based on the selected machine and search term
+  const filteredData =
+    selectedMachine === 'All Machines'
+      ? machineData.filter((machine) => machine.machineName.toLowerCase().includes(searchTerm.toLowerCase()))
+      : machineData.filter(
+          (machine) => machine.machineName === selectedMachine && machine.machineName.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+  // Calculate the highest consumer after filtering the data
+  useEffect(() => {
+    if (filteredData.length > 0) {
+      // Find the machine with the highest kWh
+      const maxMachine = filteredData.reduce((prev, current) => (prev.kWh > current.kWh ? prev : current));
+      setHighestConsumer(maxMachine.machineName);
+      setHighestConsumerKWh(maxMachine.kWh);
+    }
+  }, [filteredData]);
+
+  // Web Share API: Share data
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: 'Energy Dashboard Report',
+        text: `Energy Consumption Data: Total Consumption - ${totalConsumption} kWh, Highest Consumer - ${highestConsumer}`,
+        url: window.location.href, // Share the current page URL
+      })
+      .then(() => console.log('Shared successfully!'))
+      .catch((error) => console.log('Error sharing:', error));
+    } else {
+      console.log("Web Share API not supported");
+    }
+  };
 
   return (
     <div className="flex w-screen h-screen bg-gray-50 overflow-hidden">
       <DashboardSidebar />
-
       <div className="flex-1 p-6 overflow-auto" data-id={dataId}>
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-6">
@@ -61,13 +96,16 @@ export const EnergyTracker = ({ dataId }: { dataId?: string }) => {
               <h1 className="text-2xl font-semibold text-gray-900">Energy Tracking</h1>
               <p className="text-sm text-gray-500">Monitor and analyze energy consumption data</p>
             </div>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-2">
+            <button
+              onClick={handleShare}
+              className="bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-2"
+            >
               <Share size={16} />
               Share
             </button>
           </div>
 
-          {/* Updated Filters Row */}
+          {/* Filters Row */}
           <div className="flex flex-wrap gap-6 mb-6 items-end">
             <div className="flex flex-col">
               <h2 className="text-lg font-medium mb-2">Filters</h2>
@@ -76,102 +114,73 @@ export const EnergyTracker = ({ dataId }: { dataId?: string }) => {
                 <input
                   type="text"
                   placeholder="Search Machines..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-64 pl-10 pr-4 py-1 border rounded-md"
                 />
               </div>
             </div>
 
             <div className="flex flex-col">
-              <p className="text-sm font-medium mb-2">Chart Type</p>
-              <div className="flex gap-2">
-                <button
-                  className={`px-4 py-1 rounded-md ${chartType === 'bar' ? 'bg-blue-600 text-white' : 'bg-gray-100'}`}
-                  onClick={() => setChartType('bar')}
-                >
-                  Bar Chart
-                </button>
-                <button
-                  className={`px-4 py-1 rounded-md ${chartType === 'line' ? 'bg-blue-600 text-white' : 'bg-gray-100'}`}
-                  onClick={() => setChartType('line')}
-                >
-                  Line Chart
-                </button>
-              </div>
-            </div>
-
-            <div className="flex flex-col">
-              <p className="text-sm font-medium mb-2">Alert Severity</p>
-              <Select
-                className="w-48"
-                options={[{ value: 'all', label: 'All Severities' }]}
-                defaultValue={{ value: 'all', label: 'All Severities' }}
-              />
-            </div>
-
-            <div className="flex flex-col">
               <p className="text-sm font-medium mb-2">Machine</p>
               <Select
                 className="w-48"
-                options={[{ value: 'all', label: 'All Machine' }]}
-                defaultValue={{ value: 'all', label: 'All Machine' }}
+                options={[{ value: 'All Machines', label: 'All Machines' }, ...machineData.map((machine) => ({
+                  value: machine.machineName,
+                  label: machine.machineName,
+                }))]}
+                onChange={handleMachineSelect}
+                value={selectedMachine ? { value: selectedMachine, label: selectedMachine } : { value: 'All Machines', label: 'All Machines' }}
+                placeholder="Select Machine"
               />
             </div>
           </div>
 
+          {/* Chart Section */}
           <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
             <h2 className="text-lg font-medium mb-4">
-              {chartType === 'line' ? 'Energy Consumption Trend' : 'Top Energy Consumers'}
+              {selectedMachine && selectedMachine !== 'All Machines'
+                ? `${selectedMachine} Energy Consumption`
+                : 'Top Energy Consumers'}
             </h2>
             <div className="h-[400px]">
               <ResponsiveContainer width="100%" height="100%">
-                {chartType === 'line' ? (
-                  <LineChart data={data}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="day" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="value" stroke="#2563eb" />
-                  </LineChart>
-                ) : (
-                  <BarChart data={barData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="value" fill="#fbbf24" />
-                  </BarChart>
-                )}
+                <BarChart data={filteredData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="machineName" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="kWh" fill="#fbbf24" />
+                </BarChart>
               </ResponsiveContainer>
             </div>
           </div>
 
+          {/* Insights (Total Consumption and Alerts from MongoDB) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <InsightCard
-              title="Total Energy Consumption (MTD)"
-              value="3,428 kWh"
-              subtitle="+5% from last month"
-            />
-            <InsightCard
-              title="Highest Consumer"
-              value="CNC Machine"
-              subtitle="+5% from last month"
-              color="text-red-500"
-            />
-            <InsightCard
-              title="Energy Efficiency"
-              value="87%"
-              subtitle="+5% from last month"
-              color="text-green-500"
-            />
-            <InsightCard
-              title="Active Alerts"
-              value="3"
-              subtitle="All systems normal"
-              color="text-orange-500"
-            />
+            <div className="bg-white rounded-lg p-4 shadow-sm">
+              <p className="text-gray-600 text-sm">Total Energy Consumption </p>
+              <p className="text-2xl font-semibold text-blue-500 mt-1">{totalConsumption} kWh</p>
+              <p className="text-gray-400 text-xs mt-1">Total Machines Energy Consumption</p>
+            </div>
+            <div className="bg-white rounded-lg p-4 shadow-sm">
+              <p className="text-gray-600 text-sm">Highest Consumer</p>
+              <p className="text-2xl font-semibold text-red-500 mt-1">{highestConsumer}</p>
+              <p className="text-gray-400 text-xs mt-1">kWh: {highestConsumerKWh}</p>
+            </div>
+            <div className="bg-white rounded-lg p-4 shadow-sm">
+              <p className="text-gray-600 text-sm">Energy Efficiency</p>
+              <p className="text-2xl font-semibold text-green-500 mt-1">87%</p>
+            </div>
+            <div className="bg-white rounded-lg p-4 shadow-sm">
+              <p className="text-gray-600 text-sm">Active Alerts</p>
+              <p className="text-2xl font-semibold text-orange-500 mt-1">{activeAlerts}</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
+
+export { EnergyTracker }; // Export the component

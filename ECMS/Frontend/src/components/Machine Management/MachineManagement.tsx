@@ -21,6 +21,8 @@ const statusColor = {
 const MachineManagement = () => {
   const [machines, setMachines] = useState<Machine[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Manage modal visibility
+  const [machineToDelete, setMachineToDelete] = useState<Machine | null>(null); // Store the machine to be deleted
   const navigate = useNavigate();
 
   // Fetch machine data from backend when the component mounts
@@ -41,12 +43,38 @@ const MachineManagement = () => {
     machine.machineName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Function to open delete confirmation modal
+  const openDeleteModal = (machine: Machine) => {
+    setMachineToDelete(machine); // Set the machine to be deleted
+    setIsDeleteModalOpen(true); // Open the modal
+  };
+
+  // Function to close delete confirmation modal
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false); // Close the modal
+    setMachineToDelete(null); // Reset the machine to delete
+  };
+
+  // Handle machine deletion
+  const handleDelete = async () => {
+    if (machineToDelete) {
+      try {
+        const response = await axios.delete(`http://localhost:5000/api/machines/${machineToDelete._id}`);
+        if (response.status === 200) {
+          // Remove the deleted machine from the state
+          setMachines(machines.filter((machine) => machine._id !== machineToDelete._id));
+          closeDeleteModal(); // Close the modal after successful deletion
+        }
+      } catch (error) {
+        console.error('Error deleting machine:', error);
+      }
+    }
+  };
+
   return (
     <div className="flex w-screen h-screen bg-gray-100 overflow-hidden">
-      {/* Sidebar */}
       <DashboardSidebar />
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden p-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <h1 className="text-2xl font-semibold text-gray-800">Machine Management</h1>
@@ -90,7 +118,10 @@ const MachineManagement = () => {
                     <button className="text-green-600 hover:text-green-800">
                       <Pencil size={18} />
                     </button>
-                    <button className="text-red-600 hover:text-red-800">
+                    <button
+                      onClick={() => openDeleteModal(machine)}
+                      className="text-red-600 hover:text-red-800"
+                    >
                       <Trash size={18} />
                     </button>
                   </td>
@@ -107,6 +138,30 @@ const MachineManagement = () => {
           </table>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg w-1/3 shadow-lg">
+            <h2 className="text-xl font-semibold mb-4">Are you sure you want to delete this machine?</h2>
+            <p className="mb-4">This action cannot be undone.</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={closeDeleteModal}
+                className="bg-gray-400 text-white px-4 py-2 rounded-md"
+              >
+                No
+              </button>
+              <button
+                onClick={handleDelete}
+                className="bg-red-600 text-white px-4 py-2 rounded-md"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
