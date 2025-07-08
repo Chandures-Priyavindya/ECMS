@@ -15,6 +15,8 @@ interface User {
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null); // Store the user to delete
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,6 +36,35 @@ const UserManagement: React.FC = () => {
   const filteredUsers = users.filter(user =>
     user.fullName.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const openDeleteModal = (user: User) => {
+    setUserToDelete(user); // Set the user to be deleted
+    setIsDeleteModalOpen(true); // Open the modal
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false); // Close the modal
+    setUserToDelete(null); // Reset the user to delete
+  };
+
+  const handleDelete = async () => {
+    if (userToDelete) {
+      try {
+        const res = await fetch(`http://localhost:5000/api/users/${userToDelete._id}`, {
+          method: 'DELETE',
+        });
+        if (res.ok) {
+          // Remove the user from the local state to reflect the change
+          setUsers(users.filter((user) => user._id !== userToDelete._id));
+          closeDeleteModal(); // Close the modal after successful deletion
+        } else {
+          console.error('Error deleting user');
+        }
+      } catch (error) {
+        console.error('Error deleting user:', error);
+      }
+    }
+  };
 
   return (
     <div className="flex">
@@ -84,7 +115,10 @@ const UserManagement: React.FC = () => {
                     <button className="text-green-600 hover:text-green-800">
                       <Pencil size={18} />
                     </button>
-                    <button className="text-red-600 hover:text-red-800">
+                    <button
+                      onClick={() => openDeleteModal(user)}
+                      className="text-red-600 hover:text-red-800"
+                    >
                       <Trash size={18} />
                     </button>
                   </td>
@@ -102,6 +136,30 @@ const UserManagement: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg w-1/3 shadow-lg">
+            <h2 className="text-xl font-semibold mb-4">Are you sure you want to delete this user?</h2>
+            <p className="mb-4">This action cannot be undone.</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={closeDeleteModal}
+                className="bg-gray-400 text-white px-4 py-2 rounded-md"
+              >
+                No
+              </button>
+              <button
+                onClick={handleDelete}
+                className="bg-red-600 text-white px-4 py-2 rounded-md"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

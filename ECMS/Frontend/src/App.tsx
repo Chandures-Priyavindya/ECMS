@@ -8,6 +8,7 @@ import Alert from "./components/Alerts/Alert";
 import Clustering from "./components/Clustering/Clustering";
 import { EnergyTracker } from "./components/Energy Tracking/pages/EnergyTracker";
 import AddUser from "./components/User Management/Adduser";
+import AddMachine from "./components/Machine Management/Addmachine";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/energy-tracker" element={<EnergyTracker />} />
 
         <Route path="/add-user" element={<AddUser />} />
+        <Route path="/add-machine" element={<AddMachine />} />
         
         
       </Routes>

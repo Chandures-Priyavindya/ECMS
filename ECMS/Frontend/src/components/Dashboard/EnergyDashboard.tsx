@@ -100,16 +100,56 @@ export default function EnergyDashboard() {
   }, [viewMode]);
 
   const handleExport = () => {
-    const csvContent =
-      "data:text/csv;charset=utf-8," +
-      ["Day,Energy Consumption (kWh)", ...energyData.map((item) => `${item.name},${item.kWh}`)].join("\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "energy_report.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Prepare the data for the printable report
+    const reportContent = `
+      <div style="font-family: Arial, sans-serif; margin: 20px; background-color: #F9F9F9; color: #333;">
+        <h1 style="color: #1F6FEB; text-align: center;">Energy Dashboard Report</h1>
+        
+        <div style="background-color: #FFF; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); margin-bottom: 20px;">
+          <h2 style="color: #1F6FEB; font-size: 20px;">Summary</h2>
+          <p><strong>Total Energy Consumption: </strong><span style="color: #1F6FEB; font-size: 24px;">${summary.totalConsumption} kWh</span></p>
+          <p><strong>Highest Consumer: </strong><span style="color: #FF6347; font-size: 20px;">${summary.highestConsumer}</span></p>
+          <p><strong>Energy Efficiency: </strong><span style="color: #28A745; font-size: 20px;">${summary.energyEfficiency}%</span></p>
+          <p><strong>Active Alerts: </strong><span style="color: #FF6347; font-size: 20px;">${summary.activeAlertCount}</span></p>
+        </div>
+        
+        <div style="background-color: #FFF; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); margin-bottom: 20px;">
+          <h3 style="color: #FFB820;">Energy Consumption Trend</h3>
+          <div>
+            ${energyData.map(item => `
+              <p style="font-size: 18px; color: #555;">${item.name}: <span style="color: #1F6FEB;">${item.kWh} kWh</span></p>
+            `).join('')}
+          </div>
+        </div>
+
+        <div style="background-color: #FFF; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); margin-bottom: 20px;">
+          <h3 style="color: #FFB820;">Top Energy Consumers</h3>
+          <div>
+            ${summary.topConsumers.map((consumer) => `
+              <p style="font-size: 18px; color: #555;">${consumer.name}: <span style="color: #1F6FEB;">${consumer.usage} kWh</span></p>
+            `).join('')}
+          </div>
+        </div>
+        
+        <div style="background-color: #FFF; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); margin-bottom: 20px;">
+          <h3 style="color: #FF6347;">Active Alerts</h3>
+          <div>
+            ${alerts.length > 0 ? alerts.map((alert) => `
+              <div style="border: 1px solid #FF6347; padding: 10px; margin-bottom: 10px; border-radius: 5px; background-color: #FFEBEB;">
+                <p><strong style="color: #FF6347;">${alert.alertType}</strong> in <span style="color: #555;">${alert.machine}</span></p>
+                <p style="font-size: 14px; color: #777;">Status: ${alert.status} • Time: ${alert.time} • Severity: <span style="color: #FF6347;">${alert.severity}</span></p>
+              </div>
+            `).join('') : `<p>No active alerts</p>`}
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Open the print window
+    const printWindow = window.open('', '', 'width=800,height=600');
+    printWindow?.document.write(reportContent);
+    printWindow?.document.close();
+    printWindow?.print();
   };
 
   const maxUsage =

@@ -6,6 +6,9 @@ import userRoutes from './routes/userRoutes';
 import AlertModel from './models/Alert';
 import EnergyConsumer from './models/EnergyConsumer';
 import EnergyCollection from './models/EnergyCollection';
+import User from './models/User';
+import { deleteUser } from './controllers/userController';
+import { Request, Response } from 'express';
 
 dotenv.config();
 const app = express();
@@ -108,3 +111,86 @@ app.get('/api/energy/trend', async (req, res) => {
   }
 });
 
+// Define the Machine schema
+const machineSchema = new mongoose.Schema({
+  machineName: String,
+  status: String,
+  location: String,
+  kWh: Number,
+});
+
+// Create Machine model
+const Machine = mongoose.model('Machine', machineSchema);
+
+// POST route to insert a new machine
+app.post('/api/machines', async (req, res) => {
+  const { machineName, status, location } = req.body;
+  try {
+    const newMachine = new Machine({ machineName, status, location });
+    await newMachine.save();
+    res.status(200).json({ message: 'Machine inserted successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Failed to insert machine' });
+  }
+});
+// GET route to fetch all machines
+app.get('/api/machines', async (req, res) => {
+  try {
+    const machines = await Machine.find();  // Fetch all machines from the database
+    res.status(200).json(machines); // Send the machines as a response
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Failed to fetch machines' });
+  }
+});
+
+app.get('/api/energy-summary', async (req, res) => {
+  try {
+    // Aggregate the total kWh from the machines collection
+    const totalConsumptionData = await Machine.aggregate([
+      {
+        $group: {
+          _id: null, // No specific grouping, just sum all records
+          totalConsumption: { $sum: { $toDouble: "$kWh" } } // Sum of all kWh values (using $toDouble to ensure it's numeric)
+        }
+      }
+    ]);
+
+    // If no data exists, set totalConsumption to 0
+    const totalConsumption = totalConsumptionData.length > 0 ? totalConsumptionData[0].totalConsumption : 0;
+
+    // Fetch active alert count from the alerts collection (if necessary)
+    const activeAlerts = await AlertModel.countDocuments(); // Get the active alert count
+
+    // Send the calculated data as response
+    res.json({
+      totalConsumption, // Send the total consumption as the response
+      activeAlerts,     // Send the active alert count
+    });
+  } catch (error) {
+    console.error('Error fetching energy summary:', error);
+    res.status(500).json({ error: 'Failed to fetch energy summary' });
+  }
+});
+
+app.delete('/api/users/:id', (req, res) => {
+  deleteUser(req, res);
+});
+// DELETE machine route
+app.delete('/api/machines/:id', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const machineId = req.params.id;
+    const machine = await Machine.findByIdAndDelete(machineId);
+
+    if (!machine) {
+      res.status(404).json({ message: 'Machine not found' });
+      return;
+    }
+
+    res.status(200).json({ message: 'Machine deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting machine:', err);
+    res.status(500).json({ message: 'Error deleting machine' });
+  }
+});
